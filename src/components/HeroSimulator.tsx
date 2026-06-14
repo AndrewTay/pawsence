@@ -1,0 +1,310 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Camera, Monitor, Heart, Activity, ShieldCheck, Sparkles } from 'lucide-react';
+
+interface PetState {
+  id: 'sleep' | 'eat' | 'wait';
+  label: string;
+  cameraImg: string;
+  avatarImg: string;
+  cvLabel: string;
+  avatarLabel: string;
+  statusColor: string;
+  bgGlow: string;
+}
+
+const states: PetState[] = [
+  {
+    id: 'sleep',
+    label: 'Sleeping',
+    cameraImg: '/dog_sleeping.png',
+    avatarImg: '/avatar_sleeping.png',
+    cvLabel: 'Activity: Inactive (Resting)',
+    avatarLabel: 'Twin State: Deep Sleep',
+    statusColor: 'bg-blue-500',
+    bgGlow: 'from-blue-500/10 to-transparent',
+  },
+  {
+    id: 'eat',
+    label: 'Eating',
+    cameraImg: '/dog_eating.png',
+    avatarImg: '/avatar_eating.png',
+    cvLabel: 'Activity: Active (Feeding)',
+    avatarLabel: 'Twin State: Mimicking (Feeding)',
+    statusColor: 'bg-emerald-500',
+    bgGlow: 'from-emerald-500/10 to-transparent',
+  },
+  {
+    id: 'wait',
+    label: 'Waiting',
+    cameraImg: '/dog_waiting.png',
+    avatarImg: '/avatar_waiting.png',
+    cvLabel: 'Activity: Alert (Waiting)',
+    avatarLabel: 'Twin State: Mimicking (Alert)',
+    statusColor: 'bg-[#E87A5D]',
+    bgGlow: 'from-orange-500/10 to-transparent',
+  },
+];
+
+export default function HeroSimulator() {
+  const [currentState, setCurrentState] = useState<PetState>(states[0]);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [latency, setLatency] = useState<number>(24);
+
+  const handleStateChange = (state: PetState) => {
+    if (state.id === currentState.id) return;
+    setIsSyncing(true);
+    // Simulate camera feed network delay & computer vision processing
+    setTimeout(() => {
+      setCurrentState(state);
+      setIsSyncing(false);
+      setLatency(Math.floor(Math.random() * 15) + 18); // random latency between 18-32ms
+    }, 450);
+  };
+
+  return (
+    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+      {/* Simulation Controls */}
+      <div className="flex flex-wrap justify-center gap-3 mb-10">
+        {states.map((state) => {
+          const isActive = currentState.id === state.id;
+          return (
+            <button
+              key={state.id}
+              onClick={() => handleStateChange(state)}
+              disabled={isSyncing}
+              className={`px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                isActive
+                  ? 'bg-[#E87A5D] text-white shadow-lg shadow-orange-500/20 scale-105'
+                  : 'bg-white hover:bg-stone-50 text-stone-700 border border-stone-200/80'
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-white animate-pulse' : state.statusColor}`} />
+              Simulate {state.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Split Screen Simulator Frame */}
+      <div className="grid lg:grid-cols-2 gap-8 items-stretch relative">
+        
+        {/* Connection Link Indicator */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center z-10 bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-stone-200 shadow-xl">
+          <div className="p-2 bg-orange-50 rounded-full text-[#E87A5D] mb-1">
+            <Activity className={`w-5 h-5 ${isSyncing ? 'animate-bounce' : 'animate-pulse'}`} />
+          </div>
+          <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">Local Link</span>
+          <span className="text-[11px] font-mono text-[#E87A5D] font-bold mt-0.5">{latency}ms latency</span>
+        </div>
+
+        {/* LEFT PANEL: Live Camera Feed */}
+        <div className="bg-white rounded-3xl p-5 border border-stone-200/60 shadow-xl flex flex-col justify-between overflow-hidden relative group">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-4 z-10">
+            <div className="flex items-center gap-2">
+              <Camera className="w-5 h-5 text-stone-700" />
+              <span className="font-bold text-sm text-stone-900 tracking-tight">Camera Feed (1080p)</span>
+            </div>
+            <div className="bg-stone-950/80 backdrop-blur px-2.5 py-1 rounded-full text-[9px] text-white uppercase tracking-wider font-bold flex items-center gap-1.5 border border-white/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+              Live Feed
+            </div>
+          </div>
+
+          {/* Camera Frame */}
+          <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-900 overflow-hidden border border-stone-800 shadow-inner flex items-center justify-center">
+            
+            {/* The Image */}
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={currentState.id + '-cam'}
+                src={currentState.cameraImg}
+                alt={`Real pet ${currentState.label}`}
+                className="w-full h-full object-cover opacity-85"
+                initial={{ opacity: 0, filter: 'blur(8px)' }}
+                animate={{ opacity: 0.85, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, filter: 'blur(8px)' }}
+                transition={{ duration: 0.4 }}
+              />
+            </AnimatePresence>
+
+            {/* Computer Vision Overlay Grid & Keypoints */}
+            <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
+              {/* Scanline / Grid overlay */}
+              <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_4px,3px_100%]" />
+
+              {/* Top Details */}
+              <div className="flex justify-between">
+                <span className="font-mono text-[9px] text-[#A3E635] bg-black/60 px-2 py-0.5 rounded backdrop-blur">
+                  SYS.CV.DETECTED: DOG (99.8%)
+                </span>
+                <span className="font-mono text-[9px] text-[#A3E635] bg-black/60 px-2 py-0.5 rounded backdrop-blur">
+                  FPS: 60
+                </span>
+              </div>
+
+              {/* Simulated Skeleton Tracking Bounding Box */}
+              <motion.div
+                key={currentState.id + '-bbox'}
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="absolute border border-[#A3E635]/60 rounded-lg shadow-[0_0_15px_rgba(163,230,53,0.15)] flex flex-col justify-between p-2"
+                style={{
+                  top: currentState.id === 'sleep' ? '25%' : currentState.id === 'eat' ? '30%' : '15%',
+                  bottom: currentState.id === 'sleep' ? '25%' : currentState.id === 'eat' ? '15%' : '15%',
+                  left: currentState.id === 'sleep' ? '20%' : currentState.id === 'eat' ? '25%' : '30%',
+                  right: currentState.id === 'sleep' ? '20%' : currentState.id === 'eat' ? '25%' : '30%',
+                }}
+              >
+                {/* Bounding box corners */}
+                <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#A3E635]" />
+                <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#A3E635]" />
+                <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[#A3E635]" />
+                <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#A3E635]" />
+
+                <div className="absolute bottom-1 left-2 font-mono text-[8px] text-[#A3E635] font-semibold tracking-wide">
+                  {currentState.cvLabel}
+                </div>
+              </motion.div>
+
+              {/* Scanning status */}
+              <div className="mt-auto">
+                <span className="font-mono text-[9px] text-[#A3E635] bg-black/60 px-2 py-0.5 rounded backdrop-blur flex items-center gap-1 w-max">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#A3E635] animate-ping" />
+                  LOCAL FRAME ANALYZER: ACTIVE
+                </span>
+              </div>
+            </div>
+
+            {/* Sync Overlay Loader */}
+            {isSyncing && (
+              <div className="absolute inset-0 bg-stone-950/40 backdrop-blur-sm flex items-center justify-center z-20">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                  <span className="text-xs text-white/80 font-mono tracking-widest uppercase">Processing Feed...</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer Metadata */}
+          <div className="flex items-center justify-between mt-4 text-xs text-stone-500 font-mono">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Source: Wyze Cam V3
+            </span>
+            <span>RTSP://192.168.1.45</span>
+          </div>
+        </div>
+
+        {/* RIGHT PANEL: Digital Twin Desktop */}
+        <div className="bg-white rounded-3xl p-5 border border-stone-200/60 shadow-xl flex flex-col justify-between overflow-hidden relative group">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-4 z-10">
+            <div className="flex items-center gap-2">
+              <Monitor className="w-5 h-5 text-stone-700" />
+              <span className="font-bold text-sm text-stone-900 tracking-tight">Mac Desktop Widget</span>
+            </div>
+            <div className="bg-orange-50 border border-orange-200/60 px-3 py-1 rounded-full text-[10px] text-[#E87A5D] font-bold flex items-center gap-1">
+              <Heart className="w-3 h-3 fill-current animate-pulse" />
+              Pawsence Active
+            </div>
+          </div>
+
+          {/* Desktop Frame */}
+          <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-50 overflow-hidden border border-stone-200 flex items-center justify-center shadow-inner">
+            
+            {/* Desktop Background Mock */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#FDFBF7] via-[#F4EFE6] to-[#EBE4D5] opacity-50" />
+            
+            {/* The Image */}
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={currentState.id + '-avatar'}
+                src={currentState.avatarImg}
+                alt={`Digital Twin ${currentState.label}`}
+                className="w-4/5 h-4/5 object-contain z-10 drop-shadow-xl"
+                initial={{ opacity: 0, scale: 0.9, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -15 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+              />
+            </AnimatePresence>
+
+            {/* Ambient Shadow under Avatar */}
+            <motion.div 
+              key={currentState.id + '-shadow'}
+              className="absolute bottom-[10%] w-[40%] h-[15px] bg-stone-900/10 rounded-full blur-[6px] z-0"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            />
+
+            {/* Desktop Widget Overlay */}
+            <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between z-20">
+              {/* Top right Mac buttons */}
+              <div className="flex justify-between items-start w-full">
+                <div className="flex gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
+                </div>
+                <div className="bg-white/80 backdrop-blur border border-stone-200/60 px-2 py-0.5 rounded text-[8px] text-stone-500 font-mono">
+                  RENDER: local_engine_v1.0
+                </div>
+              </div>
+
+              {/* Status HUD display */}
+              <div className="mt-auto">
+                <motion.div
+                  key={currentState.id + '-hud'}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white/90 backdrop-blur-md border border-stone-200/80 rounded-xl p-3 shadow-lg max-w-xs flex flex-col gap-1"
+                >
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-stone-800">
+                    <Sparkles className="w-3.5 h-3.5 text-[#E87A5D] animate-spin" style={{ animationDuration: '3s' }} />
+                    {currentState.avatarLabel}
+                  </div>
+                  <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
+                    <motion.div
+                      className="bg-[#E87A5D] h-full rounded-full"
+                      initial={{ width: '0%' }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[8px] font-mono text-stone-400 mt-0.5">
+                    <span>Rigging: Active</span>
+                    <span>Pose Conf.: 98.7%</span>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Sync Overlay Loader */}
+            {isSyncing && (
+              <div className="absolute inset-0 bg-stone-100/40 backdrop-blur-sm flex items-center justify-center z-20">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 rounded-full border-2 border-[#E87A5D]/20 border-t-[#E87A5D] animate-spin" />
+                  <span className="text-xs text-stone-700 font-mono tracking-widest uppercase">Syncing Avatar...</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer Metadata */}
+          <div className="flex items-center justify-between mt-4 text-xs text-stone-500 font-mono">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              On-Device Render
+            </span>
+            <span>RAM Usage: 142MB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

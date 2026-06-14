@@ -1,0 +1,243 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Monitor, Smartphone, Layout, Wifi, Activity } from 'lucide-react';
+
+export default function BentoBox() {
+  // Menu Bar interactive state
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Desktop Pet interactive jump
+  const [petY, setPetY] = useState(0);
+  const [petRotate, setPetRotate] = useState(0);
+
+  const triggerPetJump = () => {
+    if (petY !== 0) return;
+    setPetY(-25);
+    setPetRotate(15);
+    setTimeout(() => {
+      setPetY(0);
+      setPetRotate(0);
+    }, 400);
+  };
+
+  return (
+    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+      <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-16 text-center text-stone-900 font-display">
+        Always by your side.
+      </h2>
+
+      <div className="grid md:grid-cols-3 gap-6 auto-rows-[320px] md:auto-rows-[360px]">
+        
+        {/* CARD 1: THE DESKTOP PET (2 cols wide) */}
+        <div className="md:col-span-2 bg-stone-100 rounded-3xl p-6 md:p-8 border border-stone-200/80 flex flex-col justify-between relative overflow-hidden group">
+          <div className="z-10 max-w-sm">
+            <div className="inline-flex items-center gap-1.5 bg-white border border-stone-200 px-3 py-1 rounded-full text-xs font-bold text-stone-600 mb-3">
+              <Monitor className="w-3.5 h-3.5" />
+              <span>Desktop Widget</span>
+            </div>
+            <h3 className="text-2xl font-extrabold text-stone-900 font-display">The Desktop Pet</h3>
+            <p className="text-sm text-stone-600 mt-2 leading-relaxed">
+              Lives freely on top of your working windows. Hover over the screen or click to watch them react.
+            </p>
+          </div>
+
+          {/* Interactive Screen Preview */}
+          <div 
+            onClick={triggerPetJump}
+            onMouseEnter={triggerPetJump}
+            className="absolute -bottom-10 -right-10 w-[78%] h-[78%] bg-white rounded-tl-2xl shadow-2xl border border-stone-200/80 transition-transform duration-300 group-hover:-translate-y-2 group-hover:-translate-x-2 flex flex-col overflow-hidden cursor-pointer"
+          >
+            {/* Browser top-bar mock */}
+            <div className="bg-stone-50 border-b border-stone-200/60 px-4 py-2 flex items-center gap-2">
+              <div className="flex gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-stone-200" />
+                <span className="w-2 h-2 rounded-full bg-stone-200" />
+                <span className="w-2 h-2 rounded-full bg-stone-200" />
+              </div>
+              <div className="bg-stone-100/60 rounded-md text-[9px] text-stone-400 px-4 py-0.5 w-40 text-center font-mono">
+                twinpet.app/dashboard
+              </div>
+            </div>
+
+            {/* Desktop content mock */}
+            <div className="flex-1 p-4 bg-stone-50/20 relative">
+              <div className="w-32 h-16 bg-stone-100 rounded-lg p-2.5 space-y-1.5 opacity-60 pointer-events-none">
+                <div className="h-2 w-3/4 bg-stone-300 rounded" />
+                <div className="h-1.5 w-1/2 bg-stone-200 rounded" />
+                <div className="h-1.5 w-2/3 bg-stone-200 rounded" />
+              </div>
+
+              {/* The Floating Pet */}
+              <motion.div
+                className="absolute bottom-6 right-16 w-28 h-28 z-10"
+                animate={{
+                  y: petY,
+                  rotate: petRotate
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 12
+                }}
+              >
+                <img
+                  src="/dog_avatar.png"
+                  alt="TwinPet Avatar"
+                  className="w-full h-full object-contain drop-shadow-lg"
+                />
+                {/* Click me sign */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-stone-900 text-white font-mono text-[7px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  Click
+                </div>
+              </motion.div>
+
+              {/* Shadow */}
+              <div className="absolute bottom-5 right-[74px] w-16 h-2 bg-stone-900/5 rounded-full blur-[3px]" />
+            </div>
+          </div>
+        </div>
+
+        {/* CARD 2: THE MENU BAR (1 col) */}
+        <div className="bg-stone-100 rounded-3xl p-6 md:p-8 border border-stone-200/80 flex flex-col justify-between relative overflow-hidden group">
+          <div>
+            <div className="inline-flex items-center gap-1.5 bg-white border border-stone-200 px-3 py-1 rounded-full text-xs font-bold text-stone-600 mb-3">
+              <Layout className="w-3.5 h-3.5" />
+              <span>macOS Menu Bar</span>
+            </div>
+            <h3 className="text-xl md:text-2xl font-extrabold text-stone-900 font-display">The Menu Bar</h3>
+            <p className="text-xs text-stone-600 mt-2 leading-relaxed">
+              A tiny, ambient icon sits in your menu bar, changing postures dynamically. Click to open dropdown stats.
+            </p>
+          </div>
+
+          {/* Interactive Menu Bar dropdown preview */}
+          <div className="mt-auto mx-auto w-full max-w-[240px] flex flex-col items-center">
+            {/* macOS Menu bar representation */}
+            <div className="w-full h-7 bg-white/90 backdrop-blur rounded-t-xl border border-stone-200 border-b-0 px-3.5 flex items-center justify-between text-stone-700 text-[10px] select-none shadow-sm">
+              <div className="flex gap-3 font-semibold text-[9px] text-stone-400">
+                <span>Finder</span>
+                <span>File</span>
+                <span>Edit</span>
+              </div>
+              {/* Pet icon trigger */}
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className={`flex items-center gap-1 px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                  menuOpen ? 'bg-orange-100 text-[#E87A5D] font-bold' : 'hover:bg-stone-100'
+                }`}
+              >
+                🐾
+                <span className="text-[9px] font-bold">Otis</span>
+              </button>
+            </div>
+
+            {/* Simulated dropdown */}
+            <div className="w-full relative h-28">
+              <AnimatePresence>
+                {menuOpen ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    className="absolute top-0 right-0 left-0 bg-white border border-stone-200/80 rounded-b-xl p-3 shadow-xl z-20 space-y-2 text-[10px]"
+                  >
+                    <div className="flex justify-between items-center border-b border-stone-100 pb-1.5">
+                      <span className="font-bold text-stone-700 flex items-center gap-1">
+                        <Activity className="w-3.5 h-3.5 text-[#E87A5D]" /> Otis's Pawsence
+                      </span>
+                      <span className="text-[8px] bg-emerald-100 text-emerald-800 font-bold px-1.5 rounded-full uppercase tracking-wider">
+                        Active
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 text-stone-500 font-mono text-[9px]">
+                      <div className="flex justify-between">
+                        <span>Current state:</span>
+                        <span className="text-stone-800 font-bold">Eating Kibble</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Camera sync:</span>
+                        <span className="text-stone-800 font-bold">Living Room Cam</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Framerate:</span>
+                        <span className="text-stone-800">60 FPS</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  // Default placeholder layout inside card
+                  <div className="absolute top-0 right-0 left-0 bg-white/40 border border-stone-200 border-t-0 rounded-b-xl p-3 h-16 flex items-center justify-center border-dashed text-stone-400 text-[10px] font-medium">
+                    Click 🐾 menu icon to expand
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        {/* CARD 3: IOS LIVE ACTIVITY (1 col) */}
+        <div className="bg-[#E87A5D] rounded-3xl p-6 md:p-8 flex flex-col justify-between relative overflow-hidden text-white group shadow-xl shadow-orange-500/10">
+          <div>
+            <div className="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 px-3 py-1 rounded-full text-xs font-semibold text-orange-50 mb-3">
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>iOS Live Activity</span>
+            </div>
+            <h3 className="text-xl md:text-2xl font-extrabold font-display">iOS Live Activity</h3>
+            <p className="text-xs text-orange-100 mt-2 leading-relaxed">
+              Glance at your iPhone lock screen to instantly see if they are resting, eating, or waiting.
+            </p>
+          </div>
+
+          {/* Interactive Live Activity Widget */}
+          <div className="mt-auto w-full bg-stone-950/80 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-lg text-[10px] space-y-2">
+            
+            {/* Widget Header */}
+            <div className="flex justify-between items-center text-white/60 font-mono text-[8px]">
+              <span className="flex items-center gap-1 font-bold text-white/80">
+                🐾 PAWSENCE SYNC
+              </span>
+              <span className="flex items-center gap-1">
+                <Wifi className="w-2.5 h-2.5" /> Connected
+              </span>
+            </div>
+
+            {/* Widget Body */}
+            <div className="flex justify-between items-center">
+              <div>
+                <h4 className="font-extrabold text-sm text-white">Otis is Eating Lunch</h4>
+                <p className="text-[8px] text-white/50 font-mono mt-0.5">Sync Source: Kitchen Cam • 2m ago</p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-base animate-pulse">
+                🍗
+              </div>
+            </div>
+
+            {/* Mini Progress tracker */}
+            <div className="pt-1">
+              <div className="w-full bg-white/15 h-1 rounded-full overflow-hidden relative">
+                <motion.div
+                  className="bg-[#E87A5D] h-full rounded-full"
+                  animate={{
+                    width: ['0%', '100%'],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+              </div>
+              <div className="flex justify-between text-[8px] text-white/40 mt-1 font-mono">
+                <span>Meal Sync Started</span>
+                <span>Active Mimicry</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
