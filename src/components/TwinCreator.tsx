@@ -6,7 +6,11 @@ interface PresetPet {
   name: string;
   breed: string;
   photoImg: string;
-  avatarImg: string;
+  avatars: {
+    animated: string;
+    realistic: string;
+    anime: string;
+  };
 }
 
 const presets: PresetPet[] = [
@@ -14,25 +18,38 @@ const presets: PresetPet[] = [
     name: 'Otis',
     breed: 'Pug',
     photoImg: '/pug_photo.png',
-    avatarImg: '/pug_avatar.png',
+    avatars: {
+      animated: '/pug_avatar.png',
+      realistic: '/pug_avatar_realistic.png',
+      anime: '/pug_avatar_anime.png',
+    },
   },
   {
     name: 'Luna',
     breed: 'Calico Cat',
     photoImg: '/cat_photo.png',
-    avatarImg: '/cat_avatar.png',
+    avatars: {
+      animated: '/cat_avatar.png',
+      realistic: '/cat_avatar_realistic.png',
+      anime: '/cat_avatar_anime.png',
+    },
   },
   {
     name: 'Bini',
     breed: 'Dutch Bunny',
-    photoImg: '/dog_waiting.png',
-    avatarImg: '/avatar_waiting.png',
+    photoImg: '/bunny_photo.png',
+    avatars: {
+      animated: '/bunny_avatar.png',
+      realistic: '/bunny_avatar_realistic.png',
+      anime: '/bunny_avatar_anime.png',
+    },
   },
 ];
 
 export default function TwinCreator() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedPet, setSelectedPet] = useState<PresetPet>(presets[0]);
+  const [avatarStyle, setAvatarStyle] = useState<'animated' | 'realistic' | 'anime'>('animated');
   const [scanProgress, setScanProgress] = useState<number>(0);
   const [scanStatus, setScanStatus] = useState<string>('Initializing model...');
   const [avatarAction, setAvatarAction] = useState<'idle' | 'jump' | 'spin' | 'wag'>('idle');
@@ -140,7 +157,7 @@ export default function TwinCreator() {
                   </p>
                 </div>
 
-                {/* Preset List */}
+                 {/* Preset List */}
                 <div className="space-y-3">
                   {presets.map((pet) => (
                     <button
@@ -161,6 +178,35 @@ export default function TwinCreator() {
                       </div>
                     </button>
                   ))}
+                </div>
+
+                {/* Avatar Style Selector */}
+                <div className="space-y-3 pt-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-stone-500 block">Select Avatar Style</span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { id: 'animated', name: 'Animated', desc: 'Cute 3D character' },
+                      { id: 'realistic', name: 'Realistic', desc: 'Real-world texture' },
+                      { id: 'anime', name: 'Anime', desc: 'Cozy illustration' }
+                    ] as const).map((style) => (
+                      <button
+                        key={style.id}
+                        onClick={() => setAvatarStyle(style.id)}
+                        className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer h-[72px] ${
+                          avatarStyle === style.id
+                            ? 'border-[#E87A5D] bg-orange-50/10 shadow-sm'
+                            : 'border-stone-200 hover:border-stone-300 bg-white'
+                        }`}
+                      >
+                        <span className={`text-xs font-bold ${avatarStyle === style.id ? 'text-[#E87A5D]' : 'text-stone-800'}`}>
+                          {style.name}
+                        </span>
+                        <span className="text-[9px] text-stone-400 font-medium leading-none">
+                          {style.desc}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -259,9 +305,9 @@ export default function TwinCreator() {
                   {/* Grid background */}
                   <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                   
-                  {/* The Twin Avatar */}
+                   {/* The Twin Avatar */}
                   <motion.img
-                    src={selectedPet.avatarImg}
+                    src={selectedPet.avatars[avatarStyle]}
                     alt={selectedPet.name}
                     className="w-[85%] h-[85%] object-contain drop-shadow-xl z-10"
                     animate={
@@ -288,7 +334,7 @@ export default function TwinCreator() {
                 </div>
                 
                 <span className="text-xs text-stone-400 mt-2 font-mono uppercase tracking-wider">
-                  Test rig: {selectedPet.name} ({selectedPet.breed})
+                  Test rig: {selectedPet.name} ({selectedPet.breed}) - {avatarStyle} style
                 </span>
               </div>
 
