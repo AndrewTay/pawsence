@@ -189,7 +189,7 @@ export default function ScrollShowcase() {
                           key="morning-screen"
                           src="/mac_cat_sleep_screen.png"
                           alt="Macbook morning sleep screen with Calico Cat"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-bottom"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
@@ -200,7 +200,7 @@ export default function ScrollShowcase() {
                           key="afternoon-screen"
                           src="/widget_only_gmail_pug_eating.png"
                           alt="Macbook afternoon eat screen"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-bottom"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
@@ -211,7 +211,7 @@ export default function ScrollShowcase() {
                           key="evening-screen"
                           src="/widget_only_gmail_wag.png"
                           alt="Macbook evening wait screen"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-bottom"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
