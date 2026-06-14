@@ -179,50 +179,242 @@ export default function ScrollShowcase() {
                 <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-stone-800" />
                 
                 {/* Laptop Screen Content Display */}
-                <div className="flex-1 w-full h-full bg-[#1e1e1e] rounded-lg overflow-hidden relative border border-stone-950/60 shadow-inner">
+                <div className="flex-1 w-full h-full bg-[#1e1e1e] rounded-lg overflow-hidden relative border border-stone-950/60 shadow-inner flex flex-col font-sans select-none">
                   
-                  {/* Custom Screen UI based on Active State using Unified High-Fidelity Screenshots */}
-                  <div className="absolute inset-0 z-0">
-                    <AnimatePresence mode="wait">
-                      {activeStep === 'morning' ? (
-                        <motion.img
-                          key="morning-screen"
-                          src="/mac_cat_sleep_screen.png"
-                          alt="Macbook morning sleep screen with Calico Cat"
-                          className="w-full h-full object-cover object-bottom"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      ) : activeStep === 'afternoon' ? (
-                        <motion.img
-                          key="afternoon-screen"
-                          src="/widget_only_gmail_pug_eating.png"
-                          alt="Macbook afternoon eat screen"
-                          className="w-full h-full object-cover object-bottom"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      ) : (
-                        <motion.img
-                          key="evening-screen"
-                          src="/widget_only_gmail_wag.png"
-                          alt="Macbook evening wait screen"
-                          className="w-full h-full object-cover object-bottom"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      )}
-                    </AnimatePresence>
-                  </div>
+                  {/* Custom macOS Desktop Simulation */}
+                  <AnimatePresence mode="wait">
+                    {activeStep === 'morning' ? (
+                      <motion.div
+                        key="morning-desktop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-orange-950/20 p-2 md:p-3 flex flex-col justify-between"
+                      >
+                        {/* macOS Menu Bar */}
+                        <div className="w-full bg-black/15 backdrop-blur-md text-[7px] md:text-[9px] text-white/80 px-2 py-0.5 md:py-1 rounded flex justify-between items-center border border-white/5 font-medium z-10">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <span className="font-bold text-white text-[8px] md:text-[10px]"></span>
+                            <span className="font-semibold text-white">Code</span>
+                            <span>File</span>
+                            <span>Edit</span>
+                            <span>Selection</span>
+                            <span className="hidden sm:inline">View</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span>100%</span>
+                            <span>08:30 AM</span>
+                          </div>
+                        </div>
+
+                        {/* Code Editor Window */}
+                        <div className="flex-1 w-full mt-2 mb-1 bg-stone-950/90 border border-stone-800/80 rounded-lg shadow-2xl overflow-hidden flex flex-col text-[7px] md:text-[8px] font-mono text-stone-300">
+                          {/* Window Header */}
+                          <div className="bg-stone-900 px-2.5 py-1 md:py-1.5 flex items-center justify-between border-b border-stone-900/50">
+                            <div className="flex gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FF5F56]" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FFBD2E]" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#27C93F]" />
+                            </div>
+                            <span className="text-stone-500">Workspace — App.tsx</span>
+                            <div className="w-4" />
+                          </div>
+
+                          {/* Editor Body */}
+                          <div className="flex-1 flex">
+                            {/* Sidebar */}
+                            <div className="w-12 md:w-16 border-r border-stone-900 bg-stone-950/50 p-1 md:p-2 text-stone-600 hidden sm:block text-[6px] md:text-[7px]">
+                              <div className="font-bold text-stone-500 mb-1 uppercase">Explorer</div>
+                              <div className="pl-1 text-stone-400">src/</div>
+                              <div className="pl-2 text-white">App.tsx</div>
+                              <div className="pl-1 text-stone-500">package.json</div>
+                            </div>
+                            {/* Code lines */}
+                            <div className="flex-1 p-2 md:p-3 text-left space-y-0.5 md:space-y-1 overflow-hidden leading-normal">
+                              <div className="text-stone-500">1  <span className="text-orange-400">const</span> <span className="text-blue-400">App</span> = () =&gt; &#123;</div>
+                              <div className="text-stone-500">2    <span className="text-orange-400">const</span> [count, setCount] = <span className="text-blue-400">useState</span>(<span className="text-emerald-400">0</span>);</div>
+                              <div className="text-stone-500">3    <span className="text-orange-400">const</span> <span className="text-purple-400">increment</span> = () =&gt; &#123;</div>
+                              <div className="text-stone-500">4      <span className="text-blue-400">setCount</span>(count + <span className="text-emerald-400">1</span>);</div>
+                              <div className="text-stone-500">5    &#125;;</div>
+                              <div className="text-stone-500">6    <span className="text-orange-400">return</span> (</div>
+                              <div className="text-stone-500">7      <span className="text-teal-400">&lt;div className="container"&gt;</span></div>
+                              <div className="text-stone-500">8        <span className="text-teal-400">&lt;h1&gt;Welcome!&lt;/h1&gt;</span></div>
+                              <div className="text-stone-500">9      <span className="text-teal-400">&lt;/div&gt;</span></div>
+                              <div className="text-stone-500">10   );</div>
+                              <div className="text-stone-500">11 &#125;;</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Floating Widget */}
+                        <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 bg-white/95 backdrop-blur border border-stone-200 shadow-xl rounded-2xl p-1.5 md:p-2 w-[85px] md:w-[105px] flex flex-col items-center z-20 transition-all">
+                          <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] rounded-xl overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200/50">
+                            <img src="/cat_avatar.png" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="text-[7px] md:text-[8px] font-extrabold text-stone-800 mt-1 md:mt-1.5 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            Luna: Sleeping
+                          </div>
+                        </div>
+
+                      </motion.div>
+                    ) : activeStep === 'afternoon' ? (
+                      <motion.div
+                        key="afternoon-desktop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0 bg-gradient-to-tr from-sky-100 via-indigo-50 to-amber-50 p-2 md:p-3 flex flex-col justify-between"
+                      >
+                        {/* macOS Menu Bar */}
+                        <div className="w-full bg-black/5 backdrop-blur-md text-[7px] md:text-[9px] text-stone-800/80 px-2 py-0.5 md:py-1 rounded flex justify-between items-center border border-black/5 font-medium z-10">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <span className="font-bold text-stone-900 text-[8px] md:text-[10px]"></span>
+                            <span className="font-semibold text-stone-900">Chrome</span>
+                            <span>File</span>
+                            <span>Edit</span>
+                            <span>History</span>
+                            <span className="hidden sm:inline">Bookmarks</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span>100%</span>
+                            <span>12:45 PM</span>
+                          </div>
+                        </div>
+
+                        {/* Web Browser Window (Gmail) */}
+                        <div className="flex-1 w-full mt-2 mb-1 bg-white border border-stone-200/85 rounded-lg shadow-2xl overflow-hidden flex flex-col text-[7px] md:text-[8px] text-stone-700">
+                          {/* Window Header */}
+                          <div className="bg-stone-50 px-2.5 py-1 md:py-1.5 flex items-center justify-between border-b border-stone-200">
+                            <div className="flex gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FF5F56]" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FFBD2E]" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#27C93F]" />
+                            </div>
+                            <div className="bg-stone-200/60 px-3 py-0.5 rounded text-[6px] md:text-[7px] text-stone-500 font-mono w-24 md:w-32 text-center truncate">mail.google.com</div>
+                            <div className="w-4" />
+                          </div>
+
+                          {/* Browser Body */}
+                          <div className="flex-1 flex">
+                            {/* Sidebar */}
+                            <div className="w-12 md:w-16 border-r border-stone-100 bg-stone-50/50 p-1 md:p-2 text-stone-500 hidden sm:block text-[6px] md:text-[7px] space-y-1">
+                              <div className="bg-orange-100/60 text-[#E87A5D] font-bold py-0.5 rounded text-center">Compose</div>
+                              <div className="pl-1 text-[#E87A5D] font-bold">Inbox (3)</div>
+                              <div className="pl-1">Sent</div>
+                              <div className="pl-1">Drafts</div>
+                            </div>
+                            {/* Email List */}
+                            <div className="flex-1 p-1.5 md:p-2.5 text-left space-y-1 md:space-y-1.5 leading-normal">
+                              <div className="flex justify-between items-center bg-stone-50 p-0.5 md:p-1 rounded border border-stone-100/80">
+                                <div className="flex items-center gap-1 md:gap-1.5 truncate">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                  <span className="font-bold text-stone-900">GitHub</span>
+                                  <span className="text-stone-500 truncate">Deploy Successful - pawsence-landing-page</span>
+                                </div>
+                                <span className="text-[6px] md:text-[7px] text-stone-400">12:32 PM</span>
+                              </div>
+                              <div className="flex justify-between items-center p-0.5 md:p-1 rounded">
+                                <div className="flex items-center gap-1 md:gap-1.5 truncate">
+                                  <span className="w-1.5 h-1.5 bg-transparent rounded-full" />
+                                  <span className="font-medium text-stone-800">Spotify</span>
+                                  <span className="text-stone-500 truncate">Your weekly release radar mix is here!</span>
+                                </div>
+                                <span className="text-[6px] md:text-[7px] text-stone-400">11:15 AM</span>
+                              </div>
+                              <div className="flex justify-between items-center p-0.5 md:p-1 rounded">
+                                <div className="flex items-center gap-1 md:gap-1.5 truncate">
+                                  <span className="w-1.5 h-1.5 bg-transparent rounded-full" />
+                                  <span className="font-medium text-stone-800">Figma</span>
+                                  <span className="text-stone-500 truncate">New comments on "TwinPet App Mockups"</span>
+                                </div>
+                                <span className="text-[6px] md:text-[7px] text-stone-400">09:40 AM</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Floating Widget */}
+                        <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 bg-white/95 backdrop-blur border border-stone-200 shadow-xl rounded-2xl p-1.5 md:p-2 w-[85px] md:w-[105px] flex flex-col items-center z-20 transition-all">
+                          <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] rounded-xl overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200/50">
+                            <img src="/pug_avatar.png" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="text-[7px] md:text-[8px] font-extrabold text-stone-800 mt-1 md:mt-1.5 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Otis: Feeding
+                          </div>
+                        </div>
+
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="evening-desktop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 p-2 md:p-3 flex flex-col justify-between"
+                      >
+                        {/* macOS Menu Bar */}
+                        <div className="w-full bg-black/20 backdrop-blur-md text-[7px] md:text-[9px] text-white/80 px-2 py-0.5 md:py-1 rounded flex justify-between items-center border border-white/5 font-medium z-10">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <span className="font-bold text-white text-[8px] md:text-[10px]"></span>
+                            <span className="font-semibold text-white">Dashboard</span>
+                            <span>File</span>
+                            <span>Edit</span>
+                            <span>View</span>
+                            <span className="hidden sm:inline">Go</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span>100%</span>
+                            <span>06:45 PM</span>
+                          </div>
+                        </div>
+
+                        {/* Application Window (Overtime Dashboard Alert) */}
+                        <div className="flex-1 w-full mt-2 mb-1 bg-stone-900/90 border border-stone-800/80 rounded-lg shadow-2xl overflow-hidden flex flex-col text-[7px] md:text-[8px] text-stone-300">
+                          {/* Window Header */}
+                          <div className="bg-stone-950 px-2.5 py-1 md:py-1.5 flex items-center justify-between border-b border-stone-900/40">
+                            <div className="flex gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FF5F56]" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FFBD2E]" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#27C93F]" />
+                            </div>
+                            <span className="text-stone-500">Pawsence Overtime Monitor</span>
+                            <div className="w-4" />
+                          </div>
+
+                          {/* Dashboard Content */}
+                          <div className="flex-1 p-2 md:p-4 flex flex-col items-center justify-center text-center space-y-1.5 md:space-y-2">
+                            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-500 animate-bounce text-[9px] md:text-[12px]">
+                              ⏳
+                            </div>
+                            <div className="space-y-0.5 md:space-y-1 max-w-[130px] md:max-w-[160px]">
+                              <h4 className="font-bold text-white text-[8px] md:text-[9px] uppercase tracking-wider">Clock Out Reminder</h4>
+                              <p className="text-[6.5px] md:text-[7.5px] text-stone-400">You've been working for 4.5 hours. Bini is waiting at the front door!</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Floating Widget */}
+                        <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 bg-white/95 backdrop-blur border border-stone-200 shadow-xl rounded-2xl p-1.5 md:p-2 w-[85px] md:w-[105px] flex flex-col items-center z-20 transition-all">
+                          <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] rounded-xl overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200/50">
+                            <img src="/bunny_avatar.png" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="text-[7px] md:text-[8px] font-extrabold text-stone-800 mt-1 md:mt-1.5 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                            Bini: Waiting
+                          </div>
+                        </div>
+
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   
                   {/* Sync status alert inside laptop screen */}
-                  <div className="absolute bottom-3 left-4 bg-stone-900/90 backdrop-blur px-2.5 py-1 rounded text-[8px] text-white/80 font-mono tracking-wider z-20 border border-white/5 uppercase font-bold">
+                  <div className="absolute bottom-3 left-4 bg-stone-900/90 backdrop-blur px-2 py-0.5 rounded text-[7px] text-white/80 font-mono tracking-wider z-20 border border-white/5 uppercase font-bold">
                     Pawsence Sync: {activeStep}
                   </div>
                 </div>
