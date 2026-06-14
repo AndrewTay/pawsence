@@ -187,8 +187,8 @@ export default function ScrollShowcase() {
                       {activeStep === 'morning' ? (
                         <motion.img
                           key="morning-screen"
-                          src="/mac_sleep_screen.png"
-                          alt="Macbook morning sleep screen"
+                          src="/mac_cat_sleep_screen.png"
+                          alt="Macbook morning sleep screen with Calico Cat"
                           className="w-full h-full object-cover"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}

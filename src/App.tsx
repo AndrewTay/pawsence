@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Camera, Cpu, ChevronRight, Lock } from 'lucide-react';
+import { Camera, ChevronRight, Lock } from 'lucide-react';
 import HeroSimulator from './components/HeroSimulator';
 import ScrollShowcase from './components/ScrollShowcase';
 import TwinCreator from './components/TwinCreator';
@@ -37,12 +37,6 @@ export default function App() {
 
       {/* --- HERO SECTION --- */}
       <section className="pt-36 pb-16 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
-        
-        {/* Glowing Chip */}
-        <div className="inline-flex items-center space-x-2 bg-stone-200/50 border border-stone-200/60 px-4 py-1.5 rounded-full text-xs font-bold text-stone-600 mb-8 animate-fade-in shadow-sm">
-          <Cpu className="w-3.5 h-3.5 text-[#E87A5D] animate-spin" style={{ animationDuration: '4s' }} />
-          <span>Local computer vision sync. No cloud surveillance.</span>
-        </div>
 
         {/* Main Headings */}
         <h1 className="text-5xl md:text-7xl font-black leading-[1.05] tracking-tight text-stone-900 max-w-4xl font-display">
