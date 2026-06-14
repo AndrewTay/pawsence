@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Camera, ChevronRight, Lock } from 'lucide-react';
+import { ChevronRight, Lock } from 'lucide-react';
 import HeroSimulator from './components/HeroSimulator';
 import ScrollShowcase from './components/ScrollShowcase';
 import TwinCreator from './components/TwinCreator';
@@ -124,20 +124,20 @@ export default function App() {
           {/* Camera Brands grid */}
           <div className="grid grid-cols-2 gap-4">
             {[
-              { brand: 'Wyze', desc: 'Wyze Cam v2/v3/v4' },
-              { brand: 'Furbo', desc: 'Dog Camera Sync' },
-              { brand: 'Ring', desc: 'Indoor Cam feeds' },
-              { brand: 'RTSP / IP Camera', desc: 'Standard local feeds' }
+              { brand: 'Wyze', desc: 'Wyze Cam v2/v3/v4', icon: '📷', bg: 'from-orange-500/5 to-orange-500/0' },
+              { brand: 'Furbo', desc: 'Interactive Dog Feed', icon: '🐶', bg: 'from-emerald-500/5 to-emerald-500/0' },
+              { brand: 'Ring', desc: 'Indoor Nest Feeds', icon: '🏠', bg: 'from-blue-500/5 to-blue-500/0' },
+              { brand: 'RTSP / IP Camera', desc: 'Standard Local Streams', icon: '🌐', bg: 'from-purple-500/5 to-purple-500/0' }
             ].map((item, i) => (
               <div
                 key={i}
-                className="aspect-[4/3] bg-stone-50 rounded-3xl border border-stone-200/80 p-5 flex flex-col justify-between hover:border-stone-300 hover:shadow-md transition-all cursor-default group"
+                className={`aspect-[4/3] bg-gradient-to-tr ${item.bg} bg-stone-50 rounded-3xl border border-stone-200/80 p-6 flex flex-col justify-between hover:border-stone-300 hover:shadow-md transition-all cursor-default group`}
               >
-                <div className="w-9 h-9 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-stone-400 group-hover:text-[#E87A5D] transition-colors shadow-sm">
-                  <Camera className="w-4 h-4" />
+                <div className="w-12 h-12 rounded-2xl bg-white border border-stone-200/80 flex items-center justify-center text-xl shadow-sm group-hover:scale-[1.05] transition-all">
+                  {item.icon}
                 </div>
                 <div>
-                  <span className="font-bold text-stone-800 text-sm block">{item.brand}</span>
+                  <span className="font-extrabold text-stone-850 text-sm block tracking-tight">{item.brand}</span>
                   <span className="text-[10px] text-stone-400 font-mono mt-0.5 block">{item.desc}</span>
                 </div>
               </div>
