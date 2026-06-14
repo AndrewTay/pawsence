@@ -143,7 +143,7 @@ export default function ScrollShowcase() {
   const currentStepData = steps.find((s) => s.id === activeStep) || steps[0];
 
   return (
-    <section id="how-it-works" className="py-24 bg-stone-100 border-y border-stone-200/60 relative overflow-hidden">
+    <section id="how-it-works" className="py-24 bg-stone-100 border-y border-stone-200/60 relative">
       
       {/* Background Ambient Glows */}
       <div className="absolute inset-0 pointer-events-none">
