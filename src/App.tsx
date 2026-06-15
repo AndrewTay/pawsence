@@ -39,17 +39,17 @@ export default function App() {
       <section className="pt-36 pb-16 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
 
         {/* Main Headings */}
-        <h1 className="text-5xl md:text-7xl font-black leading-[1.05] tracking-tight text-stone-900 max-w-4xl font-display">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.05] tracking-tight text-stone-900 max-w-4xl font-display">
           Your pet's real-life actions, <br/>
           <span className="text-stone-400">mirrored directly on your screen.</span>
         </h1>
         
-        <p className="text-base md:text-lg text-stone-500 leading-relaxed max-w-2xl mt-6">
+        <p className="text-base md:text-lg text-stone-500 leading-relaxed max-w-2xl mt-6 px-4">
           Pawsence connects to your existing pet camera, translates their physical actions using local AI, and manifests them as an interactive, ambient 3D desktop companion.
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-10 mb-16 w-full justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 mt-10 mb-16 px-4 w-full max-w-md mx-auto sm:max-w-none sm:mx-0 sm:px-0 sm:w-auto justify-center">
           <button
             onClick={() => setIsBetaOpen(true)}
             className="bg-[#E87A5D] text-white px-8 py-4 rounded-full text-sm font-bold uppercase tracking-wider hover:bg-[#D6684B] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2 shadow-xl shadow-orange-500/10 cursor-pointer"

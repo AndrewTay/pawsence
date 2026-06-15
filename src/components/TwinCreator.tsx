@@ -181,9 +181,9 @@ export default function TwinCreator() {
                 </div>
 
                 {/* Avatar Style Selector */}
-                <div className="space-y-3 pt-2">
+                <div className="space-y-3 pt-2 font-sans">
                   <span className="text-xs font-bold uppercase tracking-wider text-stone-500 block">Select Avatar Style</span>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {([
                       { id: 'animated', name: 'Animated', desc: 'Cute 3D character' },
                       { id: 'realistic', name: 'Realistic', desc: 'Real-world texture' },
@@ -192,16 +192,16 @@ export default function TwinCreator() {
                       <button
                         key={style.id}
                         onClick={() => setAvatarStyle(style.id)}
-                        className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer h-[72px] ${
+                        className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer min-h-[64px] sm:h-[72px] ${
                           avatarStyle === style.id
                             ? 'border-[#E87A5D] bg-orange-50/10 shadow-sm'
                             : 'border-stone-200 hover:border-stone-300 bg-white'
                         }`}
                       >
-                        <span className={`text-xs font-bold ${avatarStyle === style.id ? 'text-[#E87A5D]' : 'text-stone-800'}`}>
+                        <span className={`text-xs font-bold ${avatarStyle === style.id ? 'text-[#E87A5D]' : 'text-stone-850'}`}>
                           {style.name}
                         </span>
-                        <span className="text-[9px] text-stone-400 font-medium leading-none">
+                        <span className="text-[9px] text-stone-400 font-medium leading-none mt-1 sm:mt-0">
                           {style.desc}
                         </span>
                       </button>
