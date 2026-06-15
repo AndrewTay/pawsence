@@ -121,7 +121,7 @@ export default function HeroSimulator() {
             </AnimatePresence>
 
             {/* Computer Vision Overlay Grid & Keypoints */}
-            <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
+            <div className="absolute inset-0 pointer-events-none p-4 hidden lg:flex flex-col justify-between">
               {/* Scanline / Grid overlay */}
               <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_4px,3px_100%]" />
 
@@ -181,7 +181,7 @@ export default function HeroSimulator() {
           </div>
 
           {/* Footer Metadata */}
-          <div className="flex items-center justify-between mt-4 text-xs text-stone-500 font-mono">
+          <div className="hidden lg:flex items-center justify-between mt-4 text-xs text-stone-500 font-mono">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
               Source: Wyze Cam V3
@@ -215,7 +215,7 @@ export default function HeroSimulator() {
             />
 
             {/* macOS Menu Bar */}
-            <div className="absolute top-0 left-0 right-0 h-6 bg-black/15 backdrop-blur-md text-[8px] text-white/90 px-3 flex justify-between items-center z-20 font-sans border-b border-white/5 select-none pointer-events-none">
+            <div className="absolute top-0 left-0 right-0 h-6 bg-black/15 backdrop-blur-md text-[8px] text-white/90 px-3 hidden lg:flex justify-between items-center z-20 font-sans border-b border-white/5 select-none pointer-events-none">
               <div className="flex items-center gap-2.5">
                 <span className="font-bold text-[9px]"></span>
                 <span className="font-bold text-white">Pawsence</span>
@@ -230,7 +230,7 @@ export default function HeroSimulator() {
             </div>
 
             {/* macOS Floating Status Widget */}
-            <div className="absolute top-8 left-3 bg-white/40 backdrop-blur-md border border-white/25 rounded-2xl p-3 text-[9px] text-stone-850 font-sans shadow-lg w-[130px] pointer-events-none select-none z-20 flex flex-col gap-1.5">
+            <div className="absolute top-8 left-3 bg-white/40 backdrop-blur-md border border-white/25 rounded-2xl p-3 text-[9px] text-stone-850 font-sans shadow-lg w-[130px] pointer-events-none select-none z-20 hidden lg:flex flex-col gap-1.5">
               <div className="flex justify-between items-center">
                 <span className="font-extrabold text-[10px] text-stone-900 tracking-tight flex items-center gap-1">
                   <span>🐾</span> Pawsence
@@ -250,7 +250,7 @@ export default function HeroSimulator() {
             </div>
 
             {/* macOS Dock */}
-            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 h-8 bg-white/20 backdrop-blur-lg border border-white/10 rounded-xl px-2 flex items-center gap-2.5 z-20 shadow-lg pointer-events-none select-none">
+            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 h-8 bg-white/20 backdrop-blur-lg border border-white/10 rounded-xl px-2 hidden lg:flex items-center gap-2.5 z-20 shadow-lg pointer-events-none select-none">
               <span className="text-[13px]">📁</span>
               <span className="text-[13px]">🌐</span>
               <span className="text-[13px]">💬</span>
@@ -287,7 +287,7 @@ export default function HeroSimulator() {
             />
 
             {/* Desktop Widget Overlay - custom info panel */}
-            <div className="absolute top-8 right-3 pointer-events-none p-1.5 z-20">
+            <div className="absolute top-8 right-3 pointer-events-none p-1.5 z-20 hidden lg:block">
               <div className="bg-black/40 backdrop-blur-sm border border-white/10 px-2 py-0.5 rounded-lg text-[7.5px] text-white/90 font-mono flex items-center gap-1 shadow-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span>RENDER: local_engine_v1.0</span>
@@ -306,7 +306,7 @@ export default function HeroSimulator() {
           </div>
 
           {/* Footer Metadata */}
-          <div className="flex items-center justify-between mt-4 text-xs text-stone-500 font-mono">
+          <div className="hidden lg:flex items-center justify-between mt-4 text-xs text-stone-500 font-mono">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               On-Device Render
