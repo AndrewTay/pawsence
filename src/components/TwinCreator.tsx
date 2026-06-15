@@ -306,6 +306,7 @@ export default function TwinCreator() {
                 {avatarStyle === 'animated' && (selectedPet.name === 'Otis' || selectedPet.name === 'Luna') ? (
                   <div className="w-full h-full z-10 relative">
                     <ThreePetCanvas 
+                      key={selectedPet.name}
                       modelPath={selectedPet.name === 'Otis' ? '/pug_3d.glb' : '/cat_animated_3d.glb'} 
                       action={avatarAction} 
                     />

@@ -23,6 +23,10 @@ export default function ThreePetCanvas({ modelPath, action }: ThreePetCanvasProp
   useEffect(() => {
     if (!containerRef.current) return;
 
+    setIsLoading(true);
+    setLoadingProgress(0);
+    setHasError(false);
+
     const container = containerRef.current;
     const width = container.clientWidth || 256;
     const height = container.clientHeight || 256;
@@ -162,7 +166,7 @@ export default function ThreePetCanvas({ modelPath, action }: ThreePetCanvasProp
         }
       },
       (error) => {
-        console.error('Error loading pug 3D GLB model:', error);
+        console.error(`Error loading 3D GLB model (${modelPath}):`, error);
         setHasError(true);
         setIsLoading(false);
       }
@@ -290,7 +294,7 @@ export default function ThreePetCanvas({ modelPath, action }: ThreePetCanvasProp
         container.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [modelPath]);
 
   return (
     <div className="w-full h-full relative flex items-center justify-center bg-stone-100/10 rounded-2xl overflow-hidden border border-stone-200/40">
@@ -321,7 +325,7 @@ export default function ThreePetCanvas({ modelPath, action }: ThreePetCanvasProp
         <div className="absolute inset-0 bg-stone-950/80 backdrop-blur-md flex flex-col items-center justify-center z-30 p-4 text-center">
           <span className="text-xl">⚠️</span>
           <p className="text-xs font-bold text-white uppercase mt-2">Could not load 3D model</p>
-          <p className="text-[10px] text-stone-400 mt-1 max-w-[240px]">Verify pug_3d.glb exists in public folder.</p>
+          <p className="text-[10px] text-stone-400 mt-1 max-w-[240px]">Verify model file exists in public folder.</p>
         </div>
       )}
     </div>
