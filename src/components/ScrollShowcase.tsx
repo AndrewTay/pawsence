@@ -102,7 +102,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Luna: Sleeping
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/cat_avatar.png" className="w-full h-full object-contain" />
+                    <img src="/cat_avatar.png?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -190,7 +190,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Otis: Feeding
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/pug_avatar.png" className="w-full h-full object-contain" />
+                    <img src="/pug_avatar.png?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -251,7 +251,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Bini: Waiting
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/bunny_avatar.png" className="w-full h-full object-contain" />
+                    <img src="/bunny_avatar.png?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
