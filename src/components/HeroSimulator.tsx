@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Monitor, Heart, Activity, ShieldCheck, Sparkles } from 'lucide-react';
+import { Camera, Monitor, Heart, ShieldCheck } from 'lucide-react';
 
 interface PetState {
   id: 'sleep' | 'eat' | 'wait';
@@ -49,7 +49,6 @@ const states: PetState[] = [
 export default function HeroSimulator() {
   const [currentState, setCurrentState] = useState<PetState>(states[0]);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
-  const [latency, setLatency] = useState<number>(24);
 
   const handleStateChange = (state: PetState) => {
     if (state.id === currentState.id) return;
@@ -58,7 +57,6 @@ export default function HeroSimulator() {
     setTimeout(() => {
       setCurrentState(state);
       setIsSyncing(false);
-      setLatency(Math.floor(Math.random() * 15) + 18); // random latency between 18-32ms
     }, 450);
   };
 
@@ -88,15 +86,6 @@ export default function HeroSimulator() {
 
       {/* Split Screen Simulator Frame */}
       <div className="grid lg:grid-cols-2 gap-8 items-stretch relative">
-        
-        {/* Connection Link Indicator */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center z-10 bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-stone-200 shadow-xl">
-          <div className="p-2 bg-orange-50 rounded-full text-[#E87A5D] mb-1">
-            <Activity className={`w-5 h-5 ${isSyncing ? 'animate-bounce' : 'animate-pulse'}`} />
-          </div>
-          <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">Local Link</span>
-          <span className="text-[11px] font-mono text-[#E87A5D] font-bold mt-0.5">{latency}ms latency</span>
-        </div>
 
         {/* LEFT PANEL: Live Camera Feed */}
         <div className="bg-white rounded-3xl p-5 border border-stone-200/60 shadow-xl flex flex-col justify-between overflow-hidden relative group">
@@ -255,33 +244,7 @@ export default function HeroSimulator() {
                   RENDER: local_engine_v1.0
                 </div>
               </div>
-
-              {/* Status HUD display */}
-              <div className="mt-auto">
-                <motion.div
-                  key={currentState.id + '-hud'}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white/90 backdrop-blur-md border border-stone-200/80 rounded-xl p-3 shadow-lg max-w-xs flex flex-col gap-1"
-                >
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-stone-800">
-                    <Sparkles className="w-3.5 h-3.5 text-[#E87A5D] animate-spin" style={{ animationDuration: '3s' }} />
-                    {currentState.avatarLabel}
-                  </div>
-                  <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                    <motion.div
-                      className="bg-[#E87A5D] h-full rounded-full"
-                      initial={{ width: '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-[8px] font-mono text-stone-400 mt-0.5">
-                    <span>Rigging: Active</span>
-                    <span>Pose Conf.: 98.7%</span>
-                  </div>
-                </motion.div>
-              </div>
+              {/* Dropdown / widget content ends */}
             </div>
 
             {/* Sync Overlay Loader */}
