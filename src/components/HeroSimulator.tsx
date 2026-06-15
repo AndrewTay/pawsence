@@ -205,60 +205,11 @@ export default function HeroSimulator() {
           </div>
 
           {/* Desktop Frame */}
-          <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-900 overflow-hidden border border-stone-200 flex items-center justify-center shadow-inner">
+          <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-50 overflow-hidden border border-stone-200 flex items-center justify-center shadow-inner">
             
             {/* Desktop Background Mock */}
-            <img 
-              src="/mac_wallpaper.png" 
-              alt="macOS Desktop Wallpaper" 
-              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" 
-            />
-
-            {/* macOS Menu Bar */}
-            <div className="absolute top-0 left-0 right-0 h-6 bg-black/15 backdrop-blur-md text-[8px] text-white/90 px-3 flex justify-between items-center z-20 font-sans border-b border-white/5 select-none pointer-events-none">
-              <div className="flex items-center gap-2.5">
-                <span className="font-bold text-[9px]"></span>
-                <span className="font-bold text-white">Pawsence</span>
-                <span className="opacity-80">File</span>
-                <span className="opacity-80">Edit</span>
-                <span className="opacity-80 hidden xs:inline">View</span>
-              </div>
-              <div className="flex items-center gap-2 font-mono text-[7.5px]">
-                <span className="opacity-80">100% 🔋</span>
-                <span className="font-medium">10:00 AM</span>
-              </div>
-            </div>
-
-            {/* macOS Floating Status Widget */}
-            <div className="absolute top-8 left-3 bg-white/40 backdrop-blur-md border border-white/25 rounded-2xl p-3 text-[9px] text-stone-850 font-sans shadow-lg w-[130px] pointer-events-none select-none z-20 flex flex-col gap-1.5">
-              <div className="flex justify-between items-center">
-                <span className="font-extrabold text-[10px] text-stone-900 tracking-tight flex items-center gap-1">
-                  <span>🐾</span> Pawsence
-                </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-              <div className="border-t border-stone-900/5 pt-2 space-y-1 font-medium text-[8.5px]">
-                <div>
-                  <span className="opacity-75 block text-[7.5px] uppercase tracking-wider font-bold">Activity Sync</span>
-                  <span className="font-extrabold text-stone-900">{currentState.label}</span>
-                </div>
-                <div>
-                  <span className="opacity-75 block text-[7.5px] uppercase tracking-wider font-bold">Rig Status</span>
-                  <span className="font-mono text-[7.5px] text-stone-700 bg-stone-950/5 px-1 py-0.5 rounded block mt-0.5 truncate">{currentState.avatarLabel}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* macOS Dock */}
-            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 h-8 bg-white/20 backdrop-blur-lg border border-white/10 rounded-xl px-2 flex items-center gap-2.5 z-20 shadow-lg pointer-events-none select-none">
-              <span className="text-[13px]">📁</span>
-              <span className="text-[13px]">🌐</span>
-              <span className="text-[13px]">💬</span>
-              <span className="text-[13px] bg-[#E87A5D]/20 border border-[#E87A5D]/40 px-1 rounded-md">🐾</span>
-              <span className="text-[13px]">🎵</span>
-              <span className="text-[13px]">⚙️</span>
-            </div>
-
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#FDFBF7] via-[#F4EFE6] to-[#EBE4D5] opacity-50" />
+            
             {/* The Image */}
             <AnimatePresence mode="wait">
               <motion.div
@@ -276,22 +227,30 @@ export default function HeroSimulator() {
                 />
               </motion.div>
             </AnimatePresence>
- 
+
             {/* Ambient Shadow under Avatar */}
             <motion.div 
               key={currentState.id + '-shadow'}
-              className="absolute bottom-[13%] w-[40%] h-[15px] bg-stone-900/10 rounded-full blur-[6px] z-0"
+              className="absolute bottom-[10%] w-[40%] h-[15px] bg-stone-900/10 rounded-full blur-[6px] z-0"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.4 }}
             />
 
-            {/* Desktop Widget Overlay - custom info panel */}
-            <div className="absolute top-8 right-3 pointer-events-none p-1.5 z-20">
-              <div className="bg-black/40 backdrop-blur-sm border border-white/10 px-2 py-0.5 rounded-lg text-[7.5px] text-white/90 font-mono flex items-center gap-1 shadow-md">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>RENDER: local_engine_v1.0</span>
+            {/* Desktop Widget Overlay */}
+            <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between z-20">
+              {/* Top right Mac buttons */}
+              <div className="flex justify-between items-start w-full">
+                <div className="flex gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
+                </div>
+                <div className="bg-white/80 backdrop-blur border border-stone-200/60 px-2 py-0.5 rounded text-[8px] text-stone-500 font-mono">
+                  RENDER: local_engine_v1.0
+                </div>
               </div>
+              {/* Dropdown / widget content ends */}
             </div>
 
             {/* Sync Overlay Loader */}
