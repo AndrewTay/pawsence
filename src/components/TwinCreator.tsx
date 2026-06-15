@@ -4,6 +4,15 @@ import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
 import ThreePetCanvas from './ThreePetCanvas';
 import { fal } from '@fal-ai/client';
 
+const funWaitingTips = [
+  "Microsoft's TRELLIS 2.0 is generating a high-quality 3D mesh. This process can take up to 5 minutes.",
+  "Generating complex 3D shape structure and optimizing skeletal rigs in real-time...",
+  "Synthesizing high-poly Physically-Based Rendering (PBR) texture maps for fur, shadows, and materials...",
+  "Structuring latent representations (SLAT) to ensure clean topology and accurate features...",
+  "Almost there! Optimizing the final GLB mesh for smooth browser rendering...",
+  "Still working! Feel free to grab a cup of coffee and check back in a few minutes."
+];
+
 interface PresetPet {
   name: string;
   breed: string;
@@ -63,6 +72,7 @@ export default function TwinCreator() {
   const [generatedModelUrl, setGeneratedModelUrl] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showApiKeyInput, setShowApiKeyInput] = useState<boolean>(false);
+  const [currentTipIndex, setCurrentTipIndex] = useState<number>(0);
 
   // File Upload handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,7 +236,17 @@ export default function TwinCreator() {
     };
   }, [step]);
 
-
+  // Cycling tips effect for Step 2 during active API calls
+  useEffect(() => {
+    let tipInterval: any;
+    if (step === 2 && falApiKey.trim() !== '' && avatarStyle === 'animated') {
+      setCurrentTipIndex(0);
+      tipInterval = setInterval(() => {
+        setCurrentTipIndex((prev) => (prev + 1) % funWaitingTips.length);
+      }, 7000);
+    }
+    return () => clearInterval(tipInterval);
+  }, [step, falApiKey, avatarStyle]);
 
   const resetCreator = () => {
     setStep(1);
@@ -375,7 +395,7 @@ export default function TwinCreator() {
                         />
                       </div>
                       <p className="text-[10px] text-stone-400 leading-normal">
-                        Optional. Uses Microsoft's **TRELLIS 2.0** model via Fal.ai to generate custom 3D models. If blank, Otis/Luna will use preloaded 3D models.
+                        Optional. Uses Microsoft's **TRELLIS 2.0** model via Fal.ai to generate custom 3D models. If blank, Otis/Luna will use preloaded 3D models. Learn how to <a href="https://fal.ai/docs/documentation/setting-up/authentication" target="_blank" rel="noopener noreferrer" className="text-[#E87A5D] hover:underline font-semibold">get your Fal.ai API key here</a>.
                       </p>
                     </div>
                   )}
@@ -482,6 +502,23 @@ export default function TwinCreator() {
                 </div>
                 <p className="text-sm text-stone-700 font-medium font-mono min-h-[20px]">{scanStatus}</p>
                 
+                {/* Real API Waiting Notice */}
+                {falApiKey.trim() !== '' && avatarStyle === 'animated' && !apiError && (
+                  <div className="mt-6 p-4 bg-orange-50/50 border border-orange-100/70 rounded-2xl max-w-sm mx-auto shadow-sm animate-fade-in space-y-1.5 text-center">
+                    <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#E87A5D]">
+                      <span className="animate-pulse">⏳</span>
+                      <span>TRELLIS 2.0 Generation Active</span>
+                    </div>
+                    <p className="text-[11px] text-stone-600 leading-relaxed font-medium transition-all duration-500 min-h-[44px] flex items-center justify-center">
+                      {funWaitingTips[currentTipIndex]}
+                    </p>
+                    <div className="pt-1.5 border-t border-stone-200/50 flex justify-between items-center text-[9px] text-stone-400 font-bold uppercase tracking-wider">
+                      <span>Wait time: ~2-5 mins</span>
+                      <span className="lowercase font-normal">feel free to check back later</span>
+                    </div>
+                  </div>
+                )}
+
                 {apiError && (
                   <div className="mt-5 p-4 bg-red-50 border border-red-200 rounded-2xl text-left max-w-sm mx-auto shadow-sm animate-fade-in">
                     <p className="text-xs font-bold text-red-800">TRELLIS API Error</p>
