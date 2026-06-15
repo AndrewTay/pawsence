@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Check, Play, RefreshCw, Camera, ArrowRight } from 'lucide-react';
+import ThreePugCanvas from './ThreePugCanvas';
 
 interface PresetPet {
   name: string;
@@ -306,24 +307,30 @@ export default function TwinCreator() {
                   <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                   
                    {/* The Twin Avatar */}
-                  <motion.img
-                    src={selectedPet.avatars[avatarStyle]}
-                    alt={selectedPet.name}
-                    className="w-[85%] h-[85%] object-contain drop-shadow-xl z-10"
-                    animate={
-                      avatarAction === 'jump'
-                        ? { y: [-20, 0], scale: [1, 1.05, 1] }
-                        : avatarAction === 'spin'
-                        ? { rotate: [0, 360], scale: [1, 0.95, 1] }
-                        : avatarAction === 'wag'
-                        ? { rotate: [0, -5, 5, -5, 5, 0], x: [0, -3, 3, -3, 3, 0] }
-                        : { y: 0, rotate: 0, scale: 1 }
-                    }
-                    transition={{
-                      duration: avatarAction === 'wag' ? 0.8 : 0.5,
-                      ease: 'easeInOut',
-                    }}
-                  />
+                  {selectedPet.name === 'Otis' && avatarStyle === 'animated' ? (
+                    <div className="w-full h-full z-10 relative">
+                      <ThreePugCanvas action={avatarAction} />
+                    </div>
+                  ) : (
+                    <motion.img
+                      src={selectedPet.avatars[avatarStyle]}
+                      alt={selectedPet.name}
+                      className="w-[85%] h-[85%] object-contain drop-shadow-xl z-10"
+                      animate={
+                        avatarAction === 'jump'
+                          ? { y: [-20, 0], scale: [1, 1.05, 1] }
+                          : avatarAction === 'spin'
+                          ? { rotate: [0, 360], scale: [1, 0.95, 1] }
+                          : avatarAction === 'wag'
+                          ? { rotate: [0, -5, 5, -5, 5, 0], x: [0, -3, 3, -3, 3, 0] }
+                          : { y: 0, rotate: 0, scale: 1 }
+                      }
+                      transition={{
+                        duration: avatarAction === 'wag' ? 0.8 : 0.5,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                  )}
                   
                   {/* Shadow */}
                   <div className="absolute bottom-[8%] w-1/2 h-3 bg-stone-900/5 rounded-full blur-[4px] z-0" />
