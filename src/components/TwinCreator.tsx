@@ -1,17 +1,16 @@
 import { useState, useEffect, lazy, Suspense, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
-import { fal } from '@fal-ai/client';
 
 const ThreePetCanvas = lazy(() => import('./ThreePetCanvas'));
 
 const funWaitingTips = [
-  "Microsoft's TRELLIS 2.0 is generating a high-quality 3D mesh. This process can take up to 5 minutes.",
-  "Generating complex 3D shape structure and optimizing skeletal rigs in real-time...",
-  "Synthesizing high-poly Physically-Based Rendering (PBR) texture maps for fur, shadows, and materials...",
-  "Structuring latent representations (SLAT) to ensure clean topology and accurate features...",
-  "Almost there! Optimizing the final GLB mesh for smooth browser rendering...",
-  "Still working! Feel free to grab a cup of coffee and check back in a few minutes."
+  "Tripo3D API is generating a high-quality 3D mesh. This process typically takes 30 to 60 seconds.",
+  "Uploading and processing the pet's pose using Tripo3D's rapid reconstruction pipeline...",
+  "Generating automatic skeletal rigging and mesh topology mapping...",
+  "Synthesizing high-poly Physically-Based Rendering (PBR) texture maps for beautiful shadows and materials...",
+  "Almost there! Optimizing the final GLB mesh for smooth, instant in-browser rendering...",
+  "Rigging completes automatically! You'll be able to play with the animations in the next step."
 ];
 
 interface PresetPet {
@@ -87,7 +86,9 @@ export default function TwinCreator() {
   const [avatarAction, setAvatarAction] = useState<'idle' | 'jump' | 'spin' | 'wag'>('idle');
 
   // Advanced API states
-  const [falApiKey, setFalApiKey] = useState<string>(() => localStorage.getItem('pawsence_fal_key') || '');
+  const [tripoApiKey, setTripoApiKey] = useState<string>(
+    () => localStorage.getItem('pawsence_tripo_key') || (import.meta.env.VITE_TRIPO_API_KEY as string) || ''
+  );
   const [customFile, setCustomFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [generatedModelUrl, setGeneratedModelUrl] = useState<string | null>(null);
@@ -98,15 +99,15 @@ export default function TwinCreator() {
   // Synchronized refs to avoid exhaustive-deps warning in the step 2 useEffect
   const selectedPetRef = useRef(selectedPet);
   const avatarStyleRef = useRef(avatarStyle);
-  const falApiKeyRef = useRef(falApiKey);
+  const tripoApiKeyRef = useRef(tripoApiKey);
   const customFileRef = useRef(customFile);
 
   useEffect(() => {
     selectedPetRef.current = selectedPet;
     avatarStyleRef.current = avatarStyle;
-    falApiKeyRef.current = falApiKey;
+    tripoApiKeyRef.current = tripoApiKey;
     customFileRef.current = customFile;
-  }, [selectedPet, avatarStyle, falApiKey, customFile]);
+  }, [selectedPet, avatarStyle, tripoApiKey, customFile]);
 
   // File Upload handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,8 +146,8 @@ export default function TwinCreator() {
     setGeneratedModelUrl(null);
     setCurrentTipIndex(0);
     if (apiKeyOverride !== undefined) {
-      setFalApiKey(apiKeyOverride);
-      localStorage.setItem('pawsence_fal_key', apiKeyOverride);
+      setTripoApiKey(apiKeyOverride);
+      localStorage.setItem('pawsence_tripo_key', apiKeyOverride);
     }
     setStep(2);
   };
@@ -157,13 +158,13 @@ export default function TwinCreator() {
     let isMounted = true;
 
     if (step === 2) {
-      const currentFalApiKey = falApiKeyRef.current;
+      const currentTripoApiKey = tripoApiKeyRef.current;
       const currentAvatarStyle = avatarStyleRef.current;
       const currentCustomFile = customFileRef.current;
       const currentSelectedPet = selectedPetRef.current;
 
       // Check if we should use the real API
-      const useRealApi = currentFalApiKey.trim() !== '' && currentAvatarStyle === 'animated';
+      const useRealApi = currentTripoApiKey.trim() !== '' && currentAvatarStyle === 'animated';
 
       if (!useRealApi) {
         // SCENARIO 1: Simulated Scanning
@@ -194,13 +195,8 @@ export default function TwinCreator() {
           });
         }, 100);
       } else {
-        // SCENARIO 2: Real TRELLIS 2.0 API call
-        setScanStatus('Configuring Fal.ai API Client...');
-        
-        // Configure API client
-        fal.config({
-          credentials: currentFalApiKey.trim()
-        });
+        // SCENARIO 2: Real Tripo3D API call
+        setScanStatus('Configuring Tripo3D API Client...');
 
         // Slow progress simulation to keep the UI moving while the API runs
         interval = setInterval(() => {
@@ -212,99 +208,166 @@ export default function TwinCreator() {
           });
         }, 300);
 
-        interface FalTrellisInput {
-          image_url: File | Blob | string;
-        }
-
-        interface FalTrellisResult {
-          model_glb?: {
-            url: string;
-          };
-          data?: {
-            model_glb?: {
-              url: string;
-            };
-          };
-        }
-
-        interface QueueUpdate {
-          status: 'IN_PROGRESS' | 'QUEUED' | 'IN_QUEUE' | 'COMPLETED' | 'FAILED';
-          logs?: { message: string }[];
-          queuePosition?: number;
-        }
-
-        const runTrellis = async () => {
+        const runTripo3d = async () => {
           try {
             setScanStatus('Preparing source image...');
-            let imageSource: File | Blob;
+            let fileToUpload: File | Blob;
+            let fileName = 'image.png';
 
             if (currentCustomFile) {
-              imageSource = currentCustomFile;
+              fileToUpload = currentCustomFile;
+              fileName = currentCustomFile.name;
             } else {
-              // Fetch the preset image as a Blob so Fal client can upload it
+              // Fetch the preset image as a Blob so we can upload it
               const response = await fetch(currentSelectedPet.photoImg);
-              imageSource = await response.blob();
+              fileToUpload = await response.blob();
+              fileName = currentSelectedPet.photoImg.split('/').pop() || 'preset.png';
             }
 
             if (!isMounted) return;
-            setScanStatus('Queuing generation on Fal.ai (TRELLIS 2.0)...');
 
-            const result = await fal.subscribe('fal-ai/trellis-2', {
-              input: {
-                image_url: imageSource
-              } as FalTrellisInput,
-              logs: true,
-              onQueueUpdate: (update: QueueUpdate) => {
-                if (!isMounted) return;
-                if (update.status === 'IN_PROGRESS') {
-                  const lastLog = update.logs && update.logs.length > 0 
-                    ? update.logs[update.logs.length - 1].message 
-                    : '';
-                  if (lastLog) {
-                    setScanStatus(`Trellis: ${lastLog.slice(0, 50)}...`);
-                  } else {
-                    setScanStatus('Running TRELLIS 2.0 model inference...');
-                  }
-                } else if (update.status === 'QUEUED' || update.status === 'IN_QUEUE') {
-                  setScanStatus(`Queued in Fal.ai (position: ${update.queuePosition || 0})...`);
-                }
+            // Determine file extension (type)
+            let fileExtension = 'png';
+            if (fileName.toLowerCase().endsWith('.webp')) {
+              fileExtension = 'webp';
+            } else if (fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.jpeg')) {
+              fileExtension = 'jpg';
+            } else if (fileToUpload.type) {
+              const parts = fileToUpload.type.split('/');
+              if (parts.length > 1) {
+                fileExtension = parts[1];
+                if (fileExtension === 'jpeg') fileExtension = 'jpg';
               }
-            }) as FalTrellisResult;
+            }
+
+            setScanStatus('Uploading image to Tripo3D...');
+            const formData = new FormData();
+            formData.append('file', fileToUpload, fileName);
+
+            const uploadRes = await fetch('https://api.tripo3d.ai/v2/openapi/upload/sts', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${currentTripoApiKey.trim()}`
+              },
+              body: formData
+            });
+
+            if (!uploadRes.ok) {
+              const errText = await uploadRes.text();
+              throw new Error(`Upload failed (${uploadRes.status}): ${errText}`);
+            }
+
+            const uploadJson = await uploadRes.json();
+            if (uploadJson.code !== 0 || !uploadJson.data || !uploadJson.data.image_token) {
+              throw new Error(uploadJson.message || 'Failed to upload image to Tripo3D.');
+            }
+
+            const imageToken = uploadJson.data.image_token;
 
             if (!isMounted) return;
+            setScanStatus('Queuing generation on Tripo3D (v2.5)...');
 
-            // Extract the generated GLB URL
-            let glbUrl = '';
-            if (result && result.model_glb && result.model_glb.url) {
-              glbUrl = result.model_glb.url;
-            } else if (result && result.data && result.data.model_glb && result.data.model_glb.url) {
-              glbUrl = result.data.model_glb.url;
+            const taskRes = await fetch('https://api.tripo3d.ai/v2/openapi/task', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${currentTripoApiKey.trim()}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                type: 'image_to_model',
+                model_version: 'v2.5-20250123',
+                file: {
+                  type: fileExtension,
+                  file_token: imageToken
+                }
+              })
+            });
+
+            if (!taskRes.ok) {
+              const errText = await taskRes.text();
+              throw new Error(`Task creation failed (${taskRes.status}): ${errText}`);
             }
 
-            if (!glbUrl) {
-              throw new Error('API completed but did not return a model_glb URL.');
+            const taskJson = await taskRes.json();
+            if (taskJson.code !== 0 || !taskJson.data || !taskJson.data.task_id) {
+              throw new Error(taskJson.message || 'Failed to create task on Tripo3D.');
             }
 
+            const taskId = taskJson.data.task_id;
+
+            // Poll task status
+            let taskStatus = 'queued';
+            let modelUrl = '';
+            let attempts = 0;
+            const maxAttempts = 60; // 3 minutes total
+
+            while (isMounted && taskStatus !== 'success' && taskStatus !== 'failed' && attempts < maxAttempts) {
+              attempts++;
+              setScanStatus(`Processing model on Tripo3D (attempt ${attempts})...`);
+
+              // Wait 3 seconds
+              await new Promise((resolve) => setTimeout(resolve, 3000));
+              if (!isMounted) return;
+
+              const pollRes = await fetch(`https://api.tripo3d.ai/v2/openapi/task/${taskId}`, {
+                headers: {
+                  'Authorization': `Bearer ${currentTripoApiKey.trim()}`
+                }
+              });
+
+              if (!pollRes.ok) {
+                console.warn(`Polling request failed with status: ${pollRes.status}`);
+                continue;
+              }
+
+              const pollJson = await pollRes.json();
+              if (pollJson.code !== 0 || !pollJson.data) {
+                throw new Error(pollJson.message || 'Failed to poll task status.');
+              }
+
+              taskStatus = pollJson.data.status;
+              const progress = pollJson.data.progress || 0;
+              setScanProgress(Math.min(95, progress));
+
+              if (taskStatus === 'success') {
+                const output = pollJson.data.output;
+                if (output) {
+                  modelUrl = output.pbr_model || output.model || output.base_model || '';
+                }
+                if (!modelUrl) {
+                  throw new Error('Tripo3D task completed but output model URL was empty.');
+                }
+              } else if (taskStatus === 'failed') {
+                throw new Error('Tripo3D generation failed during processing.');
+              }
+            }
+
+            if (taskStatus !== 'success') {
+              throw new Error('Generation timed out.');
+            }
+
+            if (!isMounted) return;
             if (interval) clearInterval(interval);
+
             setScanProgress(100);
-            setScanStatus('TRELLIS 2.0 model loaded successfully!');
-            setGeneratedModelUrl(glbUrl);
+            setScanStatus('Model generated successfully!');
+            setGeneratedModelUrl(modelUrl);
 
             setTimeout(() => {
               if (isMounted) setStep(3);
             }, 800);
 
           } catch (error: unknown) {
-            console.error('Trellis API generation failed:', error);
+            console.error('Tripo3D API generation failed:', error);
             if (!isMounted) return;
             if (interval) clearInterval(interval);
             const errorMessage = error instanceof Error ? error.message : String(error);
-            setApiError(errorMessage || 'Unknown API Error occurred. Make sure your FAL_KEY is valid and has sufficient credits.');
+            setApiError(errorMessage || 'Unknown Tripo3D API Error occurred. Verify your API key is valid.');
             setScanStatus('Generation failed.');
           }
         };
 
-        runTrellis();
+        runTripo3d();
       }
     }
 
@@ -317,7 +380,7 @@ export default function TwinCreator() {
   // Cycling tips effect for Step 2 during active API calls
   useEffect(() => {
     let tipInterval: ReturnType<typeof setInterval> | undefined;
-    if (step === 2 && falApiKey.trim() !== '' && avatarStyle === 'animated') {
+    if (step === 2 && tripoApiKey.trim() !== '' && avatarStyle === 'animated') {
       tipInterval = setInterval(() => {
         setCurrentTipIndex((prev) => (prev + 1) % funWaitingTips.length);
       }, 7000);
@@ -325,7 +388,7 @@ export default function TwinCreator() {
     return () => {
       if (tipInterval) clearInterval(tipInterval);
     };
-  }, [step, falApiKey, avatarStyle]);
+  }, [step, tripoApiKey, avatarStyle]);
 
   // Autonomous animation loop (makes the pet feel alive in step 3)
   useEffect(() => {
@@ -472,29 +535,29 @@ export default function TwinCreator() {
                     className="text-xs font-bold text-stone-500 hover:text-stone-850 flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <span>⚙️</span>
-                    <span>{showApiKeyInput ? 'Hide API Settings' : 'Advanced: Real-time 3D Generation (TRELLIS 2.0)'}</span>
+                    <span>{showApiKeyInput ? 'Hide API Settings' : 'Advanced: Real-time 3D Generation (Tripo3D V2.5)'}</span>
                   </button>
                   
                   {showApiKeyInput && (
                     <div className="mt-3 p-4 bg-stone-50 border border-stone-200 rounded-2xl space-y-3 animate-fade-in">
                       <div className="space-y-1">
                         <label className="text-[10px] font-bold text-stone-600 uppercase tracking-wider block">
-                          Fal.ai API Key
+                          Tripo3D API Key
                         </label>
                         <input
                           type="password"
-                          value={falApiKey}
+                          value={tripoApiKey}
                           onChange={(e) => {
                             const val = e.target.value;
-                            setFalApiKey(val);
-                            localStorage.setItem('pawsence_fal_key', val);
+                            setTripoApiKey(val);
+                            localStorage.setItem('pawsence_tripo_key', val);
                           }}
-                          placeholder="Enter your FAL_KEY..."
+                          placeholder="Enter your Tripo3D API key..."
                           className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:border-[#E87A5D] focus:outline-none font-mono"
                         />
                       </div>
                       <p className="text-[10px] text-stone-400 leading-normal">
-                        Optional. Uses Microsoft's **TRELLIS 2.0** model via Fal.ai to generate custom 3D models. If blank, Otis/Luna will use preloaded 3D models. Learn how to <a href="https://fal.ai/docs/documentation/setting-up/authentication" target="_blank" rel="noopener noreferrer" className="text-[#E87A5D] hover:underline font-semibold">get your Fal.ai API key here</a>.
+                        Optional. Uses **Tripo3D V2.5** to generate custom 3D models. If blank, Otis/Luna will use preloaded 3D models. Learn how to <a href="https://platform.tripo3d.ai/" target="_blank" rel="noopener noreferrer" className="text-[#E87A5D] hover:underline font-semibold">get your Tripo3D API key here</a>.
                       </p>
                     </div>
                   )}
@@ -602,17 +665,17 @@ export default function TwinCreator() {
                 <p className="text-sm text-stone-700 font-medium font-mono min-h-[20px]">{scanStatus}</p>
                 
                 {/* Real API Waiting Notice */}
-                {falApiKey.trim() !== '' && avatarStyle === 'animated' && !apiError && (
+                {tripoApiKey.trim() !== '' && avatarStyle === 'animated' && !apiError && (
                   <div className="mt-6 p-4 bg-orange-50/50 border border-orange-100/70 rounded-2xl max-w-sm mx-auto shadow-sm animate-fade-in space-y-1.5 text-center">
                     <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#E87A5D]">
                       <span className="animate-pulse">⏳</span>
-                      <span>TRELLIS 2.0 Generation Active</span>
+                      <span>Tripo3D V2.5 Generation Active</span>
                     </div>
                     <p className="text-[11px] text-stone-600 leading-relaxed font-medium transition-all duration-500 min-h-[44px] flex items-center justify-center">
                       {funWaitingTips[currentTipIndex]}
                     </p>
                     <div className="pt-1.5 border-t border-stone-200/50 flex justify-between items-center text-[9px] text-stone-400 font-bold uppercase tracking-wider">
-                      <span>Wait time: ~2-5 mins</span>
+                      <span>Wait time: ~30-60 secs</span>
                       <span className="lowercase font-normal">feel free to check back later</span>
                     </div>
                   </div>
@@ -620,7 +683,7 @@ export default function TwinCreator() {
 
                 {apiError && (
                   <div className="mt-5 p-4 bg-red-50 border border-red-200 rounded-2xl text-left max-w-sm mx-auto shadow-sm animate-fade-in">
-                    <p className="text-xs font-bold text-red-800">TRELLIS API Error</p>
+                    <p className="text-xs font-bold text-red-800">Tripo3D API Error</p>
                     <p className="text-[10px] text-red-600 font-mono mt-1 leading-normal whitespace-pre-wrap">{apiError}</p>
                     <div className="flex gap-2 mt-4">
                       <button

@@ -41,8 +41,8 @@ export default function App() {
 
         {/* Main Headings */}
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.05] tracking-tight text-stone-900 max-w-4xl font-display">
-          Your pet, <br/>
-          <span className="text-stone-400">mirrored on your screen.</span>
+          Your furbaby's presence <br/>
+          <span className="text-stone-400">on your screen.</span>
         </h1>
         
         <p className="text-base md:text-lg text-stone-500 leading-relaxed max-w-2xl mt-6 px-4">

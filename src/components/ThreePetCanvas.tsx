@@ -43,8 +43,7 @@ export default function ThreePetCanvas({ modelPath, action }: ThreePetCanvasProp
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.enabled = false;
     container.appendChild(renderer.domElement);
 
     // ORBIT CONTROLS
@@ -61,16 +60,7 @@ export default function ThreePetCanvas({ modelPath, action }: ThreePetCanvasProp
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
     dirLight.position.set(4, 8, 4);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
-    dirLight.shadow.camera.near = 0.5;
-    dirLight.shadow.camera.far = 15;
-    dirLight.shadow.camera.left = -2;
-    dirLight.shadow.camera.right = 2;
-    dirLight.shadow.camera.top = 2;
-    dirLight.shadow.camera.bottom = -2;
-    dirLight.shadow.bias = -0.0005;
+    dirLight.castShadow = false;
     scene.add(dirLight);
 
     // Warm Rim Light for edge highlights
