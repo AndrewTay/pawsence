@@ -1,8 +1,6 @@
-import { useState, useEffect, lazy, Suspense, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
-
-const ThreePetCanvas = lazy(() => import('./ThreePetCanvas'));
 
 const funWaitingTips = [
   "Tripo3D API is generating a high-quality 3D mesh. This process typically takes 30 to 60 seconds.",
@@ -57,25 +55,7 @@ const presets: PresetPet[] = [
   },
 ];
 
-// Preloaded 3D GLB model mappings for each breed & style
-const preloadedModels: Record<string, Partial<Record<'animated' | 'realistic' | 'anime', string>>> = {
-  Otis: {
-    animated: '/pug_3d.glb',
-    realistic: '/pug_realistic_3d.glb',
-    anime: '/pug_anime_3d.glb',
-  },
-  Luna: {
-    animated: '/cat_animated_3d.glb',
-    anime: '/cat_anime_3d.glb',
-  },
-  Bini: {
-    anime: '/bunny_anime_3d.glb',
-  }
-};
 
-const get3dModelPath = (petName: string, style: 'animated' | 'realistic' | 'anime'): string | null => {
-  return preloadedModels[petName]?.[style] || null;
-};
 
 export default function TwinCreator() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -91,7 +71,6 @@ export default function TwinCreator() {
   );
   const [customFile, setCustomFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [generatedModelUrl, setGeneratedModelUrl] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [showApiKeyInput, setShowApiKeyInput] = useState<boolean>(false);
   const [currentTipIndex, setCurrentTipIndex] = useState<number>(0);
@@ -143,7 +122,6 @@ export default function TwinCreator() {
   const startScanning = (apiKeyOverride?: string) => {
     setScanProgress(0);
     setApiError(null);
-    setGeneratedModelUrl(null);
     setCurrentTipIndex(0);
     if (apiKeyOverride !== undefined) {
       setTripoApiKey(apiKeyOverride);
@@ -351,7 +329,6 @@ export default function TwinCreator() {
 
             setScanProgress(100);
             setScanStatus('Model generated successfully!');
-            setGeneratedModelUrl(modelUrl);
 
             setTimeout(() => {
               if (isMounted) setStep(3);
@@ -407,15 +384,11 @@ export default function TwinCreator() {
   const resetCreator = () => {
     setStep(1);
     setScanProgress(0);
-    setGeneratedModelUrl(null);
     setApiError(null);
     setAvatarAction('idle');
   };
 
-  const modelPath = generatedModelUrl && avatarStyle === 'animated' 
-    ? generatedModelUrl 
-    : get3dModelPath(selectedPet.name, avatarStyle);
-  const show3D = !!modelPath;
+
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-3xl border border-stone-200/80 shadow-2xl overflow-hidden p-6 md:p-10 relative">
@@ -714,7 +687,7 @@ export default function TwinCreator() {
             </motion.div>
           )}
 
-          {/* STEP 3: INTERACTIVE 3D AVATAR MOCK */}
+          {/* STEP 3: INTERACTIVE AVATAR MOCK */}
           {step === 3 && (
             <motion.div
               key="step3"
@@ -728,41 +701,31 @@ export default function TwinCreator() {
                 {/* Grid background */}
                 <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
-                 {/* The Twin Avatar */}
-                {show3D && modelPath ? (
-                  <div className="w-full h-full z-10 relative">
-                    <Suspense fallback={
-                      <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-md flex flex-col items-center justify-center z-30 transition-all duration-500">
-                        <div className="w-10 h-10 rounded-full border-3 border-orange-500/20 border-t-orange-500 animate-spin" />
-                      </div>
-                    }>
-                      <ThreePetCanvas 
-                        key={selectedPet.name + '_' + avatarStyle + (generatedModelUrl ? '_generated' : '_default')}
-                        modelPath={modelPath} 
-                        action={avatarAction} 
-                      />
-                    </Suspense>
-                  </div>
-                ) : (
-                  <motion.img
-                    src={selectedPet.avatars[avatarStyle]}
-                    alt={selectedPet.name}
-                    className="w-[85%] h-[85%] object-contain drop-shadow-xl z-10"
-                    animate={
-                      avatarAction === 'jump'
-                        ? { y: [-20, 0], scale: [1, 1.05, 1] }
-                        : avatarAction === 'spin'
-                        ? { rotate: [0, 360], scale: [1, 0.95, 1] }
-                        : avatarAction === 'wag'
-                        ? { rotate: [0, -5, 5, -5, 5, 0], x: [0, -3, 3, -3, 3, 0] }
-                        : { y: 0, rotate: 0, scale: 1 }
-                    }
-                    transition={{
-                      duration: avatarAction === 'wag' ? 0.8 : 0.5,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                )}
+                {/* The Twin Avatar (Framer Motion 2D Rigged Animation) */}
+                <motion.img
+                  src={previewUrl || selectedPet.avatars[avatarStyle]}
+                  alt={selectedPet.name}
+                  className="w-[80%] h-[80%] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.2)] z-10"
+                  animate={
+                    avatarAction === 'jump'
+                      ? { y: [0, -80, 0], scaleY: [0.85, 1.15, 0.9, 1] }
+                      : avatarAction === 'spin'
+                      ? { rotateY: [0, 360], scale: [1, 0.92, 1] }
+                      : avatarAction === 'wag'
+                      ? { x: [0, -10, 10, -10, 10, -6, 6, 0], rotate: [0, -4, 4, -4, 4, 0] }
+                      : { 
+                          y: [0, -3, 0], 
+                          scaleY: [0.99, 1.015, 0.99] 
+                        }
+                  }
+                  transition={
+                    avatarAction === 'wag'
+                      ? { duration: 0.8, ease: 'easeInOut' }
+                      : avatarAction === 'jump' || avatarAction === 'spin'
+                      ? { duration: 0.65, ease: 'easeInOut' }
+                      : { duration: 2.0, repeat: Infinity, ease: 'easeInOut' }
+                  }
+                />
                 
                 {/* Shadow */}
                 <div className="absolute bottom-[8%] w-1/2 h-3 bg-stone-900/5 rounded-full blur-[4px] z-0" />
