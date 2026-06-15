@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { ChevronRight } from 'lucide-react';
 import HeroSimulator from './components/HeroSimulator';
 import ScrollShowcase from './components/ScrollShowcase';
 import TwinCreator from './components/TwinCreator';
 import BentoBox from './components/BentoBox';
-import BetaModal from './components/BetaModal';
+
+const BetaModal = lazy(() => import('./components/BetaModal'));
 
 export default function App() {
   const [isBetaOpen, setIsBetaOpen] = useState(false);
@@ -176,7 +177,9 @@ export default function App() {
       </footer>
 
       {/* --- BETA SIGNUP MODAL --- */}
-      <BetaModal isOpen={isBetaOpen} onClose={() => setIsBetaOpen(false)} />
+      <Suspense fallback={null}>
+        <BetaModal isOpen={isBetaOpen} onClose={() => setIsBetaOpen(false)} />
+      </Suspense>
 
     </div>
   );

@@ -1,0 +1,9 @@
+# Pawsence - Ambient Screen Companion For Your Pet
+
+Pawsence connects to your existing pet camera and manifests them as an ambient 3D desktop companion.
+
+## Key Features
+- [How it Works](https://pawsence.com/#how-it-works)
+- [Creator Sandbox](https://pawsence.com/#creator-sandbox)
+- [Supported Cameras](https://pawsence.com/#cameras)
+- [Ecosystem](https://pawsence.com/#ecosystem)

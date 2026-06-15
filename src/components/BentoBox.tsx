@@ -131,7 +131,7 @@ export default function BentoBox() {
                 }}
               >
                 <img
-                  src="/pug_avatar.png"
+                  src="/pug_avatar.webp"
                   alt="Pawsence Avatar"
                   className="w-full h-full object-contain"
                 />

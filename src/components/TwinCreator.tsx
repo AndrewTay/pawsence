@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
-import ThreePetCanvas from './ThreePetCanvas';
 import { fal } from '@fal-ai/client';
+
+const ThreePetCanvas = lazy(() => import('./ThreePetCanvas'));
 
 const funWaitingTips = [
   "Microsoft's TRELLIS 2.0 is generating a high-quality 3D mesh. This process can take up to 5 minutes.",
@@ -28,34 +29,54 @@ const presets: PresetPet[] = [
   {
     name: 'Otis',
     breed: 'Pug',
-    photoImg: '/pug_photo.png',
+    photoImg: '/pug_photo.webp',
     avatars: {
-      animated: '/pug_avatar.png',
-      realistic: '/pug_avatar_realistic.png',
-      anime: '/pug_avatar_anime.png',
+      animated: '/pug_avatar.webp',
+      realistic: '/pug_avatar_realistic.webp',
+      anime: '/pug_avatar_anime.webp',
     },
   },
   {
     name: 'Luna',
     breed: 'Calico Cat',
-    photoImg: '/cat_photo.png',
+    photoImg: '/cat_photo.webp',
     avatars: {
-      animated: '/cat_avatar.png',
-      realistic: '/cat_avatar_realistic.png',
-      anime: '/cat_avatar_anime.png',
+      animated: '/cat_avatar.webp',
+      realistic: '/cat_avatar_realistic.webp',
+      anime: '/cat_avatar_anime.webp',
     },
   },
   {
     name: 'Bini',
     breed: 'Dutch Bunny',
-    photoImg: '/bunny_photo.png',
+    photoImg: '/bunny_photo.webp',
     avatars: {
-      animated: '/bunny_avatar.png',
-      realistic: '/bunny_avatar_realistic.png',
-      anime: '/bunny_avatar_anime.png',
+      animated: '/bunny_avatar.webp',
+      realistic: '/bunny_avatar_realistic.webp',
+      anime: '/bunny_avatar_anime.webp',
     },
   },
 ];
+
+// Preloaded 3D GLB model mappings for each breed & style
+const preloadedModels: Record<string, Partial<Record<'animated' | 'realistic' | 'anime', string>>> = {
+  Otis: {
+    animated: '/pug_3d.glb',
+    realistic: '/pug_realistic_3d.glb',
+    anime: '/pug_anime_3d.glb',
+  },
+  Luna: {
+    animated: '/cat_animated_3d.glb',
+    anime: '/cat_anime_3d.glb',
+  },
+  Bini: {
+    anime: '/bunny_anime_3d.glb',
+  }
+};
+
+const get3dModelPath = (petName: string, style: 'animated' | 'realistic' | 'anime'): string | null => {
+  return preloadedModels[petName]?.[style] || null;
+};
 
 export default function TwinCreator() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -63,7 +84,7 @@ export default function TwinCreator() {
   const [avatarStyle, setAvatarStyle] = useState<'animated' | 'realistic' | 'anime'>('animated');
   const [scanProgress, setScanProgress] = useState<number>(0);
   const [scanStatus, setScanStatus] = useState<string>('Initializing model...');
-  const avatarAction = 'idle' as 'idle' | 'jump' | 'spin' | 'wag';
+  const [avatarAction, setAvatarAction] = useState<'idle' | 'jump' | 'spin' | 'wag'>('idle');
 
   // Advanced API states
   const [falApiKey, setFalApiKey] = useState<string>(() => localStorage.getItem('pawsence_fal_key') || '');
@@ -73,6 +94,19 @@ export default function TwinCreator() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [showApiKeyInput, setShowApiKeyInput] = useState<boolean>(false);
   const [currentTipIndex, setCurrentTipIndex] = useState<number>(0);
+
+  // Synchronized refs to avoid exhaustive-deps warning in the step 2 useEffect
+  const selectedPetRef = useRef(selectedPet);
+  const avatarStyleRef = useRef(avatarStyle);
+  const falApiKeyRef = useRef(falApiKey);
+  const customFileRef = useRef(customFile);
+
+  useEffect(() => {
+    selectedPetRef.current = selectedPet;
+    avatarStyleRef.current = avatarStyle;
+    falApiKeyRef.current = falApiKey;
+    customFileRef.current = customFile;
+  }, [selectedPet, avatarStyle, falApiKey, customFile]);
 
   // File Upload handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,18 +130,40 @@ export default function TwinCreator() {
     }
   };
 
+  const triggerAction = useCallback((action: 'jump' | 'spin' | 'wag') => {
+    if (avatarAction !== 'idle') return;
+    setAvatarAction(action);
+    const duration = action === 'wag' ? 1000 : 650;
+    setTimeout(() => {
+      setAvatarAction('idle');
+    }, duration);
+  }, [avatarAction]);
+
+  const startScanning = (apiKeyOverride?: string) => {
+    setScanProgress(0);
+    setApiError(null);
+    setGeneratedModelUrl(null);
+    setCurrentTipIndex(0);
+    if (apiKeyOverride !== undefined) {
+      setFalApiKey(apiKeyOverride);
+      localStorage.setItem('pawsence_fal_key', apiKeyOverride);
+    }
+    setStep(2);
+  };
+
   // Scanning effect in Step 2
   useEffect(() => {
-    let interval: any;
+    let interval: ReturnType<typeof setInterval> | undefined;
     let isMounted = true;
 
     if (step === 2) {
-      setScanProgress(0);
-      setApiError(null);
-      setGeneratedModelUrl(null);
+      const currentFalApiKey = falApiKeyRef.current;
+      const currentAvatarStyle = avatarStyleRef.current;
+      const currentCustomFile = customFileRef.current;
+      const currentSelectedPet = selectedPetRef.current;
 
       // Check if we should use the real API
-      const useRealApi = falApiKey.trim() !== '' && avatarStyle === 'animated';
+      const useRealApi = currentFalApiKey.trim() !== '' && currentAvatarStyle === 'animated';
 
       if (!useRealApi) {
         // SCENARIO 1: Simulated Scanning
@@ -128,7 +184,7 @@ export default function TwinCreator() {
               setScanStatus(matchedStatus.text);
             }
             if (next >= 100) {
-              clearInterval(interval);
+              if (interval) clearInterval(interval);
               setTimeout(() => {
                 if (isMounted) setStep(3);
               }, 600);
@@ -143,7 +199,7 @@ export default function TwinCreator() {
         
         // Configure API client
         fal.config({
-          credentials: falApiKey.trim()
+          credentials: currentFalApiKey.trim()
         });
 
         // Slow progress simulation to keep the UI moving while the API runs
@@ -156,28 +212,49 @@ export default function TwinCreator() {
           });
         }, 300);
 
+        interface FalTrellisInput {
+          image_url: File | Blob | string;
+        }
+
+        interface FalTrellisResult {
+          model_glb?: {
+            url: string;
+          };
+          data?: {
+            model_glb?: {
+              url: string;
+            };
+          };
+        }
+
+        interface QueueUpdate {
+          status: 'IN_PROGRESS' | 'QUEUED' | 'IN_QUEUE' | 'COMPLETED' | 'FAILED';
+          logs?: { message: string }[];
+          queuePosition?: number;
+        }
+
         const runTrellis = async () => {
           try {
             setScanStatus('Preparing source image...');
             let imageSource: File | Blob;
 
-            if (customFile) {
-              imageSource = customFile;
+            if (currentCustomFile) {
+              imageSource = currentCustomFile;
             } else {
               // Fetch the preset image as a Blob so Fal client can upload it
-              const response = await fetch(selectedPet.photoImg);
+              const response = await fetch(currentSelectedPet.photoImg);
               imageSource = await response.blob();
             }
 
             if (!isMounted) return;
             setScanStatus('Queuing generation on Fal.ai (TRELLIS 2.0)...');
 
-            const result: any = await fal.subscribe('fal-ai/trellis-2', {
+            const result = await fal.subscribe('fal-ai/trellis-2', {
               input: {
                 image_url: imageSource
-              },
+              } as FalTrellisInput,
               logs: true,
-              onQueueUpdate: (update: any) => {
+              onQueueUpdate: (update: QueueUpdate) => {
                 if (!isMounted) return;
                 if (update.status === 'IN_PROGRESS') {
                   const lastLog = update.logs && update.logs.length > 0 
@@ -192,7 +269,7 @@ export default function TwinCreator() {
                   setScanStatus(`Queued in Fal.ai (position: ${update.queuePosition || 0})...`);
                 }
               }
-            });
+            }) as FalTrellisResult;
 
             if (!isMounted) return;
 
@@ -208,7 +285,7 @@ export default function TwinCreator() {
               throw new Error('API completed but did not return a model_glb URL.');
             }
 
-            clearInterval(interval);
+            if (interval) clearInterval(interval);
             setScanProgress(100);
             setScanStatus('TRELLIS 2.0 model loaded successfully!');
             setGeneratedModelUrl(glbUrl);
@@ -217,11 +294,12 @@ export default function TwinCreator() {
               if (isMounted) setStep(3);
             }, 800);
 
-          } catch (error: any) {
+          } catch (error: unknown) {
             console.error('Trellis API generation failed:', error);
             if (!isMounted) return;
-            clearInterval(interval);
-            setApiError(error.message || 'Unknown API Error occurred. Make sure your FAL_KEY is valid and has sufficient credits.');
+            if (interval) clearInterval(interval);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            setApiError(errorMessage || 'Unknown API Error occurred. Make sure your FAL_KEY is valid and has sufficient credits.');
             setScanStatus('Generation failed.');
           }
         };
@@ -232,28 +310,49 @@ export default function TwinCreator() {
 
     return () => {
       isMounted = false;
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     };
   }, [step]);
 
   // Cycling tips effect for Step 2 during active API calls
   useEffect(() => {
-    let tipInterval: any;
+    let tipInterval: ReturnType<typeof setInterval> | undefined;
     if (step === 2 && falApiKey.trim() !== '' && avatarStyle === 'animated') {
-      setCurrentTipIndex(0);
       tipInterval = setInterval(() => {
         setCurrentTipIndex((prev) => (prev + 1) % funWaitingTips.length);
       }, 7000);
     }
-    return () => clearInterval(tipInterval);
+    return () => {
+      if (tipInterval) clearInterval(tipInterval);
+    };
   }, [step, falApiKey, avatarStyle]);
+
+  // Autonomous animation loop (makes the pet feel alive in step 3)
+  useEffect(() => {
+    if (step !== 3) return;
+    const interval = setInterval(() => {
+      // 40% chance to perform a random action every 10 seconds if currently idle
+      if (avatarAction === 'idle' && Math.random() < 0.4) {
+        const actions: ('jump' | 'spin' | 'wag')[] = ['jump', 'spin', 'wag'];
+        const randomAction = actions[Math.floor(Math.random() * actions.length)];
+        triggerAction(randomAction);
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [step, avatarAction, triggerAction]);
 
   const resetCreator = () => {
     setStep(1);
     setScanProgress(0);
     setGeneratedModelUrl(null);
     setApiError(null);
+    setAvatarAction('idle');
   };
+
+  const modelPath = generatedModelUrl && avatarStyle === 'animated' 
+    ? generatedModelUrl 
+    : get3dModelPath(selectedPet.name, avatarStyle);
+  const show3D = !!modelPath;
 
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-3xl border border-stone-200/80 shadow-2xl overflow-hidden p-6 md:p-10 relative">
@@ -539,8 +638,7 @@ export default function TwinCreator() {
                         onClick={() => {
                           setApiError(null);
                           // Temporarily bypass API and run simulated path
-                          setFalApiKey('');
-                          setStep(2);
+                          startScanning('');
                         }}
                         className="flex-1 px-3 py-2 bg-[#E87A5D] hover:bg-[#D6684B] rounded-xl text-[10px] font-bold text-white cursor-pointer text-center"
                       >
@@ -568,13 +666,19 @@ export default function TwinCreator() {
                 <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
                  {/* The Twin Avatar */}
-                {avatarStyle === 'animated' && (selectedPet.name === 'Otis' || selectedPet.name === 'Luna' || generatedModelUrl) ? (
+                {show3D && modelPath ? (
                   <div className="w-full h-full z-10 relative">
-                    <ThreePetCanvas 
-                      key={selectedPet.name + (generatedModelUrl ? '_generated' : '_default')}
-                      modelPath={generatedModelUrl || (selectedPet.name === 'Otis' ? '/pug_3d.glb' : '/cat_animated_3d.glb')} 
-                      action={avatarAction} 
-                    />
+                    <Suspense fallback={
+                      <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-md flex flex-col items-center justify-center z-30 transition-all duration-500">
+                        <div className="w-10 h-10 rounded-full border-3 border-orange-500/20 border-t-orange-500 animate-spin" />
+                      </div>
+                    }>
+                      <ThreePetCanvas 
+                        key={selectedPet.name + '_' + avatarStyle + (generatedModelUrl ? '_generated' : '_default')}
+                        modelPath={modelPath} 
+                        action={avatarAction} 
+                      />
+                    </Suspense>
                   </div>
                 ) : (
                   <motion.img
@@ -604,6 +708,24 @@ export default function TwinCreator() {
                   Model Ready
                 </div>
               </div>
+
+              {/* Interaction Animation Control Pills */}
+              <div className="flex gap-2.5 mt-5 justify-center z-20">
+                {[
+                  { id: 'wag' as const, label: '🐾 Wag Tail' },
+                  { id: 'jump' as const, label: '🦘 Jump' },
+                  { id: 'spin' as const, label: '✨ Spin' }
+                ].map((act) => (
+                  <button
+                    key={act.id}
+                    onClick={() => triggerAction(act.id)}
+                    disabled={avatarAction !== 'idle'}
+                    className="px-4 py-2 bg-[#FAF8F5] hover:bg-stone-100 disabled:opacity-50 text-stone-700 disabled:text-stone-400 text-xs font-bold rounded-full border border-stone-200 shadow-sm transition-all active:scale-[0.97] cursor-pointer"
+                  >
+                    {act.label}
+                  </button>
+                ))}
+              </div>
               
               <span className="text-xs text-stone-400 mt-4 font-mono uppercase tracking-wider">
                 Test rig: {selectedPet.name} ({selectedPet.breed}) - {avatarStyle} style
@@ -630,7 +752,7 @@ export default function TwinCreator() {
 
         {step === 1 && (
           <button
-            onClick={() => setStep(2)}
+            onClick={() => startScanning()}
             className="px-6 py-3 bg-[#E87A5D] hover:bg-[#D6684B] text-white text-sm font-semibold rounded-xl flex items-center gap-1.5 shadow-lg shadow-orange-500/10 cursor-pointer"
           >
             <span>Generate 3D Twin</span>

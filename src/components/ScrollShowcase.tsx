@@ -102,7 +102,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Luna: Sleeping
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/cat_sleeping_avatar.png?v=2" className="w-full h-full object-contain" />
+                    <img src="/cat_sleeping_avatar.webp?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -190,7 +190,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Otis: Feeding
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/pug_eating_avatar.png?v=2" className="w-full h-full object-contain" />
+                    <img src="/pug_eating_avatar.webp?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -251,7 +251,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Buddy: Waiting
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/avatar_waiting.png?v=2" className="w-full h-full object-contain" />
+                    <img src="/avatar_waiting.webp?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -314,7 +314,7 @@ export default function ScrollShowcase() {
       time: 'Morning Sync',
       title: 'Quiet companionship during deep focus.',
       description: 'When they are asleep on the couch at home, their digital twin curls up peacefully next to your active windows. Enjoy their quiet presence without the distraction of a raw surveillance feed or battery drain.',
-      avatarImg: '/avatar_sleeping.png',
+      avatarImg: '/avatar_sleeping.webp',
       icon: <Sun className="w-5 h-5 text-amber-500" />,
       bgGradient: 'from-amber-500/5 via-orange-500/2 to-transparent',
     },
@@ -323,7 +323,7 @@ export default function ScrollShowcase() {
       time: 'Afternoon Sync',
       title: 'Never miss their daily routines.',
       description: 'When they wake up to visit the food bowl, your desktop avatar springs to life, walking over to its own virtual bowl. Standard computer vision registers their feeding habits, keeping you subtly informed in real-time.',
-      avatarImg: '/avatar_eating.png',
+      avatarImg: '/avatar_eating.webp',
       icon: <Coffee className="w-5 h-5 text-[#E87A5D]" />,
       bgGradient: 'from-emerald-500/5 via-teal-500/2 to-transparent',
     },
@@ -332,7 +332,7 @@ export default function ScrollShowcase() {
       time: 'Evening Sync',
       title: 'A gentle reminder to log off.',
       description: "When they begin pacing by the front door or looking up waiting, your digital pet mirrors their behavior. It's the ultimate, guilt-free reminder that it's time to close your editor and spend quality time with them.",
-      avatarImg: '/avatar_waiting.png',
+      avatarImg: '/avatar_waiting.webp',
       icon: <Sunset className="w-5 h-5 text-indigo-500" />,
       bgGradient: 'from-indigo-500/5 via-purple-500/2 to-transparent',
     },

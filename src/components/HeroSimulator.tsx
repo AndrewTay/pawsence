@@ -19,8 +19,8 @@ const states: PetState[] = [
   {
     id: 'sleep',
     label: 'Sleeping',
-    cameraImg: '/dog_sleeping.png',
-    avatarImg: '/avatar_sleeping.png?v=2',
+    cameraImg: '/dog_sleeping.webp',
+    avatarImg: '/avatar_sleeping.webp?v=2',
     cvLabel: 'Activity: Inactive (Resting)',
     avatarLabel: 'Twin State: Deep Sleep',
     statusColor: 'bg-blue-500',
@@ -29,8 +29,8 @@ const states: PetState[] = [
   {
     id: 'eat',
     label: 'Eating',
-    cameraImg: '/dog_eating.png',
-    avatarImg: '/avatar_eating.png?v=2',
+    cameraImg: '/dog_eating.webp',
+    avatarImg: '/avatar_eating.webp?v=2',
     cvLabel: 'Activity: Active (Feeding)',
     avatarLabel: 'Twin State: Mimicking (Feeding)',
     statusColor: 'bg-emerald-500',
@@ -39,8 +39,8 @@ const states: PetState[] = [
   {
     id: 'wait',
     label: 'Waiting',
-    cameraImg: '/dog_waiting.png',
-    avatarImg: '/avatar_waiting.png?v=2',
+    cameraImg: '/dog_waiting.webp',
+    avatarImg: '/avatar_waiting.webp?v=2',
     cvLabel: 'Activity: Alert (Waiting)',
     avatarLabel: 'Twin State: Mimicking (Alert)',
     statusColor: 'bg-[#E87A5D]',
@@ -209,7 +209,7 @@ export default function HeroSimulator() {
             
             {/* Desktop Background Mock */}
             <img 
-              src="/mac_wallpaper.png" 
+              src="/mac_wallpaper.webp" 
               alt="macOS Desktop Wallpaper" 
               className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" 
             />
