@@ -113,11 +113,15 @@ export default function TwinCreator() {
   const triggerAction = useCallback((action: 'jump' | 'spin' | 'wag') => {
     if (avatarAction !== 'idle') return;
     setAvatarAction(action);
-    const duration = action === 'wag' ? 1000 : 650;
-    setTimeout(() => {
-      setAvatarAction('idle');
-    }, duration);
-  }, [avatarAction]);
+    
+    const isVideoAction = selectedPet.name === 'Otis' && avatarStyle === 'animated' && (action === 'jump' || action === 'wag');
+    if (!isVideoAction) {
+      const duration = action === 'wag' ? 1000 : 650;
+      setTimeout(() => {
+        setAvatarAction('idle');
+      }, duration);
+    }
+  }, [avatarAction, selectedPet.name, avatarStyle]);
 
   const startScanning = (apiKeyOverride?: string) => {
     setScanProgress(0);
@@ -701,31 +705,43 @@ export default function TwinCreator() {
                 {/* Grid background */}
                 <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
-                {/* The Twin Avatar (Framer Motion 2D Rigged Animation) */}
-                <motion.img
-                  src={previewUrl || selectedPet.avatars[avatarStyle]}
-                  alt={selectedPet.name}
-                  className="w-[80%] h-[80%] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.2)] z-10"
-                  animate={
-                    avatarAction === 'jump'
-                      ? { y: [0, -80, 0], scaleY: [0.85, 1.15, 0.9, 1] }
-                      : avatarAction === 'spin'
-                      ? { rotateY: [0, 360], scale: [1, 0.92, 1] }
-                      : avatarAction === 'wag'
-                      ? { x: [0, -10, 10, -10, 10, -6, 6, 0], rotate: [0, -4, 4, -4, 4, 0] }
-                      : { 
-                          y: [0, -3, 0], 
-                          scaleY: [0.99, 1.015, 0.99] 
-                        }
-                  }
-                  transition={
-                    avatarAction === 'wag'
-                      ? { duration: 0.8, ease: 'easeInOut' }
-                      : avatarAction === 'jump' || avatarAction === 'spin'
-                      ? { duration: 0.65, ease: 'easeInOut' }
-                      : { duration: 2.0, repeat: Infinity, ease: 'easeInOut' }
-                  }
-                />
+                {/* The Twin Avatar (Framer Motion 2D Rigged Animation or WebM/MP4 video loop) */}
+                {selectedPet.name === 'Otis' && avatarStyle === 'animated' && (avatarAction === 'jump' || avatarAction === 'wag') ? (
+                  <video
+                    key={avatarAction}
+                    src={avatarAction === 'jump' ? '/pug_animated_jumping.mp4' : '/pug_animated_wagging.mp4'}
+                    autoPlay
+                    muted
+                    playsInline
+                    className="w-[85%] h-[85%] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.2)] z-10"
+                    onEnded={() => setAvatarAction('idle')}
+                  />
+                ) : (
+                  <motion.img
+                    src={previewUrl || selectedPet.avatars[avatarStyle]}
+                    alt={selectedPet.name}
+                    className="w-[80%] h-[80%] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.2)] z-10"
+                    animate={
+                      avatarAction === 'jump'
+                        ? { y: [0, -80, 0], scaleY: [0.85, 1.15, 0.9, 1] }
+                        : avatarAction === 'spin'
+                        ? { rotateY: [0, 360], scale: [1, 0.92, 1] }
+                        : avatarAction === 'wag'
+                        ? { x: [0, -10, 10, -10, 10, -6, 6, 0], rotate: [0, -4, 4, -4, 4, 0] }
+                        : { 
+                            y: [0, -3, 0], 
+                            scaleY: [0.99, 1.015, 0.99] 
+                          }
+                    }
+                    transition={
+                      avatarAction === 'wag'
+                        ? { duration: 0.8, ease: 'easeInOut' }
+                        : avatarAction === 'jump' || avatarAction === 'spin'
+                        ? { duration: 0.65, ease: 'easeInOut' }
+                        : { duration: 2.0, repeat: Infinity, ease: 'easeInOut' }
+                    }
+                  />
+                )}
                 
                 {/* Shadow */}
                 <div className="absolute bottom-[8%] w-1/2 h-3 bg-stone-900/5 rounded-full blur-[4px] z-0" />
