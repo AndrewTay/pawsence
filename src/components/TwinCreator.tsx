@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
-import ThreePugCanvas from './ThreePugCanvas';
+import ThreePetCanvas from './ThreePetCanvas';
 
 interface PresetPet {
   name: string;
@@ -303,9 +303,12 @@ export default function TwinCreator() {
                 <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
                  {/* The Twin Avatar */}
-                {selectedPet.name === 'Otis' && avatarStyle === 'animated' ? (
+                {avatarStyle === 'animated' && (selectedPet.name === 'Otis' || selectedPet.name === 'Luna') ? (
                   <div className="w-full h-full z-10 relative">
-                    <ThreePugCanvas action={avatarAction} />
+                    <ThreePetCanvas 
+                      modelPath={selectedPet.name === 'Otis' ? '/pug_3d.glb' : '/cat_animated_3d.glb'} 
+                      action={avatarAction} 
+                    />
                   </div>
                 ) : (
                   <motion.img
