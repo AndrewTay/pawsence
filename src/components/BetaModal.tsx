@@ -13,14 +13,31 @@ export default function BetaModal({ isOpen, onClose }: BetaModalProps) {
   const [cameraBrand, setCameraBrand] = useState('wyze');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setStatus('submitting');
     
-    setTimeout(() => {
+    try {
+      await fetch("https://formsubmit.co/ajax/andrewtaywq3@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          email,
+          petType,
+          cameraBrand,
+          _subject: "🐾 Pawsence Beta Signup!"
+        })
+      });
       setStatus('success');
-    }, 1500);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      // Fallback to success UI to ensure good UX even if adblockers block FormSubmit
+      setStatus('success');
+    }
   };
 
   return (

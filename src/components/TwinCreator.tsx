@@ -48,7 +48,7 @@ const presets: PresetPet[] = [
     breed: 'Dutch Bunny',
     photoImg: '/bunny_photo.webp',
     avatars: {
-      animated: '/bunny_avatar.webp',
+      animated: '/bunny_avatar.png',
       realistic: '/bunny_avatar_realistic.webp',
       anime: '/bunny_avatar_anime.webp',
     },
@@ -477,7 +477,12 @@ export default function TwinCreator() {
                     ] as const).map((style) => (
                       <button
                         key={style.id}
-                        onClick={() => setAvatarStyle(style.id)}
+                        onClick={() => {
+                          setAvatarStyle(style.id);
+                          if (style.id !== 'animated') {
+                            setAvatarAction('idle');
+                          }
+                        }}
                         className={`p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer min-h-[64px] sm:h-[72px] ${
                           avatarStyle === style.id
                             ? 'border-[#E87A5D] bg-orange-50/10 shadow-sm'
@@ -525,7 +530,7 @@ export default function TwinCreator() {
                         />
                       </div>
                       <p className="text-[10px] text-stone-400 leading-normal">
-                        Optional. Uses **Tripo3D V2.5** to generate custom 3D models. If blank, Otis/Luna will use preloaded 3D models. Learn how to <a href="https://platform.tripo3d.ai/" target="_blank" rel="noopener noreferrer" className="text-[#E87A5D] hover:underline font-semibold">get your Tripo3D API key here</a>.
+                        Optional. Uses **Tripo3D V2.5** to generate custom 3D models. If blank, Otis/Luna/Bini will use preloaded 3D models. Learn how to <a href="https://platform.tripo3d.ai/" target="_blank" rel="noopener noreferrer" className="text-[#E87A5D] hover:underline font-semibold">get your Tripo3D API key here</a>.
                       </p>
                     </div>
                   )}
@@ -697,13 +702,29 @@ export default function TwinCreator() {
                 <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
                 {/* The Twin Avatar (Framer Motion 2D Rigged Animation or WebM/MP4 video loop) */}
-                {selectedPet.name === 'Otis' && avatarStyle === 'animated' && (avatarAction === 'jump' || avatarAction === 'wag' || avatarAction === 'spin') ? (
+                {(selectedPet.name === 'Otis' || selectedPet.name === 'Luna' || selectedPet.name === 'Bini') &&
+                avatarStyle === 'animated' &&
+                (avatarAction === 'jump' || avatarAction === 'wag' || avatarAction === 'spin') ? (
                   <video
                     key={avatarAction}
                     src={
-                      avatarAction === 'jump' ? '/pug_animated_jumping.mp4' :
-                      avatarAction === 'wag' ? '/pug_animated_wagging.mp4' :
-                      '/pug_animated_spinning.mp4'
+                      selectedPet.name === 'Luna'
+                        ? avatarAction === 'jump'
+                          ? '/cat_animated_jumping.mp4'
+                          : avatarAction === 'wag'
+                          ? '/cat_animated_wagging.mp4'
+                          : '/cat_animated_spinning.mp4'
+                        : selectedPet.name === 'Bini'
+                        ? avatarAction === 'jump'
+                          ? '/bunny_animated_jumping.mp4'
+                          : avatarAction === 'wag'
+                          ? '/bunny_animated_wagging.mp4'
+                          : '/bunny_animated_spinning.mp4'
+                        : avatarAction === 'jump'
+                        ? '/pug_animated_jumping.mp4'
+                        : avatarAction === 'wag'
+                        ? '/pug_animated_wagging.mp4'
+                        : '/pug_animated_spinning.mp4'
                     }
                     autoPlay
                     muted
@@ -745,28 +766,30 @@ export default function TwinCreator() {
               </div>
 
               {/* Interaction Animation Control Pills */}
-              <div className="flex gap-2.5 mt-5 justify-center z-20 font-sans">
-                {[
-                  { id: 'wag' as const, label: '🐾 Wag Tail' },
-                  { id: 'jump' as const, label: '🦘 Jump' },
-                  { id: 'spin' as const, label: '✨ Spin' }
-                ].map((act) => {
-                  const isActive = avatarAction === act.id;
-                  return (
-                    <button
-                      key={act.id}
-                      onClick={() => triggerAction(act.id)}
-                      className={`px-4 py-2 text-xs font-bold rounded-full border shadow-sm transition-all active:scale-[0.97] cursor-pointer ${
-                        isActive
-                          ? 'bg-[#E87A5D] text-white border-[#E87A5D] shadow-md shadow-orange-500/10'
-                          : 'bg-[#FAF8F5] hover:bg-stone-100 text-stone-700 border-stone-200'
-                      }`}
-                    >
-                      {act.label}
-                    </button>
-                  );
-                })}
-              </div>
+              {avatarStyle === 'animated' && (
+                <div className="flex gap-2.5 mt-5 justify-center z-20 font-sans">
+                  {[
+                    { id: 'wag' as const, label: '🐾 Wag Tail' },
+                    { id: 'jump' as const, label: '🦘 Jump' },
+                    { id: 'spin' as const, label: '✨ Spin' }
+                  ].map((act) => {
+                    const isActive = avatarAction === act.id;
+                    return (
+                      <button
+                        key={act.id}
+                        onClick={() => triggerAction(act.id)}
+                        className={`px-4 py-2 text-xs font-bold rounded-full border shadow-sm transition-all active:scale-[0.97] cursor-pointer ${
+                          isActive
+                            ? 'bg-[#E87A5D] text-white border-[#E87A5D] shadow-md shadow-orange-500/10'
+                            : 'bg-[#FAF8F5] hover:bg-stone-100 text-stone-700 border-stone-200'
+                        }`}
+                      >
+                        {act.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               
               <span className="text-xs text-stone-400 mt-4 font-mono uppercase tracking-wider">
