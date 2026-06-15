@@ -69,16 +69,57 @@ export default function BentoBox() {
             </div>
 
             {/* Desktop content mock */}
-            <div className="flex-1 p-4 bg-stone-50/20 relative overflow-hidden">
-              <div className="w-32 h-16 bg-stone-100 rounded-lg p-2.5 space-y-1.5 opacity-60 pointer-events-none">
-                <div className="h-2 w-3/4 bg-stone-300 rounded" />
-                <div className="h-1.5 w-1/2 bg-stone-200 rounded" />
-                <div className="h-1.5 w-2/3 bg-stone-200 rounded" />
+            <div className="flex-1 p-3 bg-stone-50/40 relative overflow-hidden flex gap-3 select-none text-[8px] font-sans">
+              {/* Mini Dashboard Sidebar */}
+              <div className="w-16 border-r border-stone-200/60 pr-2 flex flex-col gap-2 opacity-75 hidden sm:flex">
+                <div className="font-extrabold text-[#E87A5D]">Pawsence</div>
+                <div className="space-y-1 font-semibold text-stone-500">
+                  <div className="bg-stone-200/50 text-stone-900 px-1 py-0.5 rounded">Dashboard</div>
+                  <div className="px-1 py-0.5">Cam Feeds</div>
+                  <div className="px-1 py-0.5">Settings</div>
+                </div>
+              </div>
+
+              {/* Main Dashboard Panel */}
+              <div className="flex-1 space-y-3">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-white border border-stone-200/60 rounded-lg p-1.5 shadow-sm space-y-0.5">
+                    <span className="text-[7px] text-stone-400 font-bold block uppercase tracking-wider">Sync State</span>
+                    <div className="flex items-center gap-1">
+                      <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="font-extrabold text-stone-850">Otis Active</span>
+                    </div>
+                  </div>
+                  <div className="bg-white border border-stone-200/60 rounded-lg p-1.5 shadow-sm space-y-0.5">
+                    <span className="text-[7px] text-stone-400 font-bold block uppercase tracking-wider">On-Device AI</span>
+                    <span className="font-extrabold text-stone-850">Local Engine</span>
+                  </div>
+                </div>
+
+                {/* Main Activity Log */}
+                <div className="bg-white border border-stone-200/60 rounded-xl p-2 shadow-sm space-y-1.5 max-w-[180px]">
+                  <span className="text-[7px] text-stone-400 font-bold block uppercase tracking-wider">Recent Activity</span>
+                  <div className="space-y-1 font-mono text-[7px]">
+                    <div className="flex justify-between border-b border-stone-100 pb-0.5 text-stone-500">
+                      <span>09:42 AM</span>
+                      <span className="text-stone-800 font-semibold">Otis is Active</span>
+                    </div>
+                    <div className="flex justify-between border-b border-stone-100 pb-0.5 text-stone-500">
+                      <span>09:15 AM</span>
+                      <span className="text-stone-800 font-semibold">Trellis 3D Rigged</span>
+                    </div>
+                    <div className="flex justify-between text-stone-500">
+                      <span>08:30 AM</span>
+                      <span className="text-stone-850">Camera Connected</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* The Floating Pet */}
               <motion.div
-                className="absolute bottom-2 right-8 w-24 h-24 z-10"
+                className="absolute bottom-2 right-8 w-20 h-20 z-10"
                 animate={{
                   y: petY,
                   rotate: petRotate
@@ -90,9 +131,9 @@ export default function BentoBox() {
                 }}
               >
                 <img
-                  src="/dog_avatar.png"
+                  src="/pug_avatar.png"
                   alt="Pawsence Avatar"
-                  className="w-full h-full object-contain drop-shadow-lg"
+                  className="w-full h-full object-contain"
                 />
               </motion.div>
 
