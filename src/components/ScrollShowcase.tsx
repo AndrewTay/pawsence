@@ -102,7 +102,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Luna: Sleeping
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/cat_avatar.png?v=2" className="w-full h-full object-contain" />
+                    <img src="/cat_sleeping_avatar.png?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -190,7 +190,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Otis: Feeding
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/pug_avatar.png?v=2" className="w-full h-full object-contain" />
+                    <img src="/pug_eating_avatar.png?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -239,7 +239,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     </div>
                     <div className="space-y-0.5 md:space-y-1 max-w-[130px] md:max-w-[160px]">
                       <h4 className="font-bold text-white text-[8px] md:text-[9px] uppercase tracking-wider">Clock Out Reminder</h4>
-                      <p className="text-[6.5px] md:text-[7.5px] text-stone-400">You've been working for 4.5 hours. Bini is waiting at the front door!</p>
+                      <p className="text-[6.5px] md:text-[7.5px] text-stone-400">You've been working for 4.5 hours. Buddy is waiting at the front door!</p>
                     </div>
                   </div>
                 </div>
@@ -248,10 +248,10 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                 <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 flex flex-row items-end justify-end gap-2 md:gap-3 z-20 transition-all font-sans">
                   <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                    Bini: Waiting
+                    Buddy: Waiting
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/bunny_avatar.png?v=2" className="w-full h-full object-contain" />
+                    <img src="/avatar_waiting.png?v=2" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
