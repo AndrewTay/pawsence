@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Sunset, Coffee } from 'lucide-react';
 
+
+
 interface Step {
   id: 'morning' | 'afternoon' | 'evening';
   time: string;
@@ -93,12 +95,12 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                   </div>
                 </div>
 
-                {/* Floating Widget */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 bg-white/95 backdrop-blur border border-stone-200 shadow-xl rounded-2xl p-1.5 md:p-2 w-[85px] md:w-[105px] flex flex-col items-center z-20 transition-all font-sans">
-                  <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] rounded-xl overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200/50">
-                    <img src="/cat_avatar.png" className="w-full h-full object-cover" />
+                {/* Floating Widget - Bounding box removed for natural feel */}
+                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 w-[85px] md:w-[105px] flex flex-col items-center justify-center z-20 transition-all font-sans">
+                  <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] flex items-center justify-center filter drop-shadow-md">
+                    <img src="/cat_avatar.png" className="w-full h-full object-contain" />
                   </div>
-                  <div className="text-[7px] md:text-[8px] font-extrabold text-stone-800 mt-1 md:mt-1.5 flex items-center gap-1">
+                  <div className="text-[6px] md:text-[7.5px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2 py-0.5 rounded-full mt-1 flex items-center gap-1 shadow-md whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                     Luna: Sleeping
                   </div>
@@ -181,12 +183,12 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                   </div>
                 </div>
 
-                {/* Floating Widget */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 bg-white/95 backdrop-blur border border-stone-200 shadow-xl rounded-2xl p-1.5 md:p-2 w-[85px] md:w-[105px] flex flex-col items-center z-20 transition-all font-sans">
-                  <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] rounded-xl overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200/50">
-                    <img src="/pug_avatar.png" className="w-full h-full object-cover" />
+                {/* Floating Widget - Bounding box removed for natural feel */}
+                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 w-[85px] md:w-[105px] flex flex-col items-center justify-center z-20 transition-all font-sans">
+                  <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] flex items-center justify-center filter drop-shadow-md">
+                    <img src="/pug_avatar.png" className="w-full h-full object-contain" />
                   </div>
-                  <div className="text-[7px] md:text-[8px] font-extrabold text-stone-800 mt-1 md:mt-1.5 flex items-center gap-1">
+                  <div className="text-[6px] md:text-[7.5px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2 py-0.5 rounded-full mt-1 flex items-center gap-1 shadow-md whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Otis: Feeding
                   </div>
@@ -242,12 +244,12 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                   </div>
                 </div>
 
-                {/* Floating Widget */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 bg-white/95 backdrop-blur border border-stone-200 shadow-xl rounded-2xl p-1.5 md:p-2 w-[85px] md:w-[105px] flex flex-col items-center z-20 transition-all font-sans">
-                  <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] rounded-xl overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200/50">
-                    <img src="/bunny_avatar.png" className="w-full h-full object-cover" />
+                {/* Floating Widget - Bounding box removed for natural feel */}
+                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 w-[85px] md:w-[105px] flex flex-col items-center justify-center z-20 transition-all font-sans">
+                  <div className="w-[70px] md:w-[89px] h-[70px] md:h-[89px] flex items-center justify-center filter drop-shadow-md">
+                    <img src="/bunny_avatar.png" className="w-full h-full object-contain" />
                   </div>
-                  <div className="text-[7px] md:text-[8px] font-extrabold text-stone-850 mt-1 md:mt-1.5 flex items-center gap-1 font-sans">
+                  <div className="text-[6px] md:text-[7.5px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2 py-0.5 rounded-full mt-1 flex items-center gap-1 shadow-md whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                     Bini: Waiting
                   </div>

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Monitor, Heart, ShieldCheck } from 'lucide-react';
 
+
+
 interface PetState {
   id: 'sleep' | 'eat' | 'wait';
   label: string;
@@ -210,16 +212,20 @@ export default function HeroSimulator() {
             
             {/* The Image */}
             <AnimatePresence mode="wait">
-              <motion.img
+              <motion.div
                 key={currentState.id + '-avatar'}
-                src={currentState.avatarImg}
-                alt={`Digital Twin ${currentState.label}`}
-                className="w-4/5 h-4/5 object-contain z-10 drop-shadow-xl"
+                className="w-4/5 h-4/5 flex items-center justify-center z-10 filter drop-shadow-xl"
                 initial={{ opacity: 0, scale: 0.9, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -15 }}
                 transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-              />
+              >
+                <img
+                  src={currentState.avatarImg}
+                  alt={`Digital Twin ${currentState.label}`}
+                  className="w-full h-full object-contain"
+                />
+              </motion.div>
             </AnimatePresence>
 
             {/* Ambient Shadow under Avatar */}
