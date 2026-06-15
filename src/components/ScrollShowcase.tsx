@@ -96,13 +96,13 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                 </div>
 
                 {/* Floating Widget - Bounding box removed for natural feel (Size increased by 50%) */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 w-[125px] md:w-[160px] flex flex-col items-center justify-center z-20 transition-all font-sans">
-                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/cat_avatar.png" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mt-1 flex items-center gap-1 shadow-md whitespace-nowrap">
+                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 flex flex-row items-end justify-end gap-2 md:gap-3 z-20 transition-all font-sans">
+                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                     Luna: Sleeping
+                  </div>
+                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
+                    <img src="/cat_avatar.png" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -184,13 +184,13 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                 </div>
 
                 {/* Floating Widget - Bounding box removed for natural feel (Size increased by 50%) */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 w-[125px] md:w-[160px] flex flex-col items-center justify-center z-20 transition-all font-sans">
-                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/pug_avatar.png" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mt-1 flex items-center gap-1 shadow-md whitespace-nowrap">
+                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 flex flex-row items-end justify-end gap-2 md:gap-3 z-20 transition-all font-sans">
+                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Otis: Feeding
+                  </div>
+                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
+                    <img src="/pug_avatar.png" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -245,13 +245,13 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                 </div>
 
                 {/* Floating Widget - Bounding box removed for natural feel (Size increased by 50%) */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 w-[125px] md:w-[160px] flex flex-col items-center justify-center z-20 transition-all font-sans">
-                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/bunny_avatar.png" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mt-1 flex items-center gap-1 shadow-md whitespace-nowrap">
+                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 flex flex-row items-end justify-end gap-2 md:gap-3 z-20 transition-all font-sans">
+                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                     Bini: Waiting
+                  </div>
+                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
+                    <img src="/bunny_avatar.png" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
