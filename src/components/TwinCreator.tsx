@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
 import ThreePetCanvas from './ThreePetCanvas';
+import { fal } from '@fal-ai/client';
 
 interface PresetPet {
   name: string;
@@ -55,43 +56,174 @@ export default function TwinCreator() {
   const [scanStatus, setScanStatus] = useState<string>('Initializing model...');
   const avatarAction = 'idle' as 'idle' | 'jump' | 'spin' | 'wag';
 
+  // Advanced API states
+  const [falApiKey, setFalApiKey] = useState<string>(() => localStorage.getItem('pawsence_fal_key') || '');
+  const [customFile, setCustomFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [generatedModelUrl, setGeneratedModelUrl] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [showApiKeyInput, setShowApiKeyInput] = useState<boolean>(false);
+
+  // File Upload handler
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCustomFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      
+      const customPet: PresetPet = {
+        name: 'My Pet',
+        breed: 'Custom Upload',
+        photoImg: url,
+        avatars: {
+          animated: url,
+          realistic: url,
+          anime: url,
+        },
+      };
+      setSelectedPet(customPet);
+    }
+  };
+
   // Scanning effect in Step 2
   useEffect(() => {
     let interval: any;
+    let isMounted = true;
+
     if (step === 2) {
       setScanProgress(0);
-      setScanStatus('Initializing mesh rig...');
-      
-      const statuses = [
-        { progress: 20, text: 'Analyzing coat markings & patterns...' },
-        { progress: 45, text: 'Mapping skeletal joints (30 nodes)...' },
-        { progress: 70, text: 'Generating high-poly 3D textures...' },
-        { progress: 90, text: 'Optimizing low-poly mesh for desktop...' },
-        { progress: 100, text: 'Finalizing digital twin!' }
-      ];
+      setApiError(null);
+      setGeneratedModelUrl(null);
 
-      interval = setInterval(() => {
-        setScanProgress((prev) => {
-          const next = prev + 4;
-          
-          // Update status message based on progress
-          const matchedStatus = statuses.find(s => next >= s.progress - 5 && next <= s.progress);
-          if (matchedStatus) {
-            setScanStatus(matchedStatus.text);
-          }
+      // Check if we should use the real API
+      const useRealApi = falApiKey.trim() !== '' && avatarStyle === 'animated';
 
-          if (next >= 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-              setStep(3);
-            }, 600);
-            return 100;
-          }
-          return next;
+      if (!useRealApi) {
+        // SCENARIO 1: Simulated Scanning
+        setScanStatus('Initializing mesh rig...');
+        const statuses = [
+          { progress: 20, text: 'Analyzing coat markings & patterns...' },
+          { progress: 45, text: 'Mapping skeletal joints (30 nodes)...' },
+          { progress: 70, text: 'Generating high-poly 3D textures...' },
+          { progress: 90, text: 'Optimizing low-poly mesh for desktop...' },
+          { progress: 100, text: 'Finalizing digital twin!' }
+        ];
+
+        interval = setInterval(() => {
+          setScanProgress((prev) => {
+            const next = prev + 4;
+            const matchedStatus = statuses.find(s => next >= s.progress - 5 && next <= s.progress);
+            if (matchedStatus) {
+              setScanStatus(matchedStatus.text);
+            }
+            if (next >= 100) {
+              clearInterval(interval);
+              setTimeout(() => {
+                if (isMounted) setStep(3);
+              }, 600);
+              return 100;
+            }
+            return next;
+          });
+        }, 100);
+      } else {
+        // SCENARIO 2: Real TRELLIS 2.0 API call
+        setScanStatus('Configuring Fal.ai API Client...');
+        
+        // Configure API client
+        fal.config({
+          credentials: falApiKey.trim()
         });
-      }, 100);
+
+        // Slow progress simulation to keep the UI moving while the API runs
+        interval = setInterval(() => {
+          setScanProgress((prev) => {
+            if (prev < 90) {
+              return prev + 1;
+            }
+            return prev;
+          });
+        }, 300);
+
+        const runTrellis = async () => {
+          try {
+            setScanStatus('Preparing source image...');
+            let imageSource: File | Blob;
+
+            if (customFile) {
+              imageSource = customFile;
+            } else {
+              // Fetch the preset image as a Blob so Fal client can upload it
+              const response = await fetch(selectedPet.photoImg);
+              imageSource = await response.blob();
+            }
+
+            if (!isMounted) return;
+            setScanStatus('Queuing generation on Fal.ai (TRELLIS 2.0)...');
+
+            const result: any = await fal.subscribe('fal-ai/trellis-2', {
+              input: {
+                image_url: imageSource
+              },
+              logs: true,
+              onQueueUpdate: (update: any) => {
+                if (!isMounted) return;
+                if (update.status === 'IN_PROGRESS') {
+                  const lastLog = update.logs && update.logs.length > 0 
+                    ? update.logs[update.logs.length - 1].message 
+                    : '';
+                  if (lastLog) {
+                    setScanStatus(`Trellis: ${lastLog.slice(0, 50)}...`);
+                  } else {
+                    setScanStatus('Running TRELLIS 2.0 model inference...');
+                  }
+                } else if (update.status === 'QUEUED' || update.status === 'IN_QUEUE') {
+                  setScanStatus(`Queued in Fal.ai (position: ${update.queuePosition || 0})...`);
+                }
+              }
+            });
+
+            if (!isMounted) return;
+
+            // Extract the generated GLB URL
+            let glbUrl = '';
+            if (result && result.model_glb && result.model_glb.url) {
+              glbUrl = result.model_glb.url;
+            } else if (result && result.data && result.data.model_glb && result.data.model_glb.url) {
+              glbUrl = result.data.model_glb.url;
+            }
+
+            if (!glbUrl) {
+              throw new Error('API completed but did not return a model_glb URL.');
+            }
+
+            clearInterval(interval);
+            setScanProgress(100);
+            setScanStatus('TRELLIS 2.0 model loaded successfully!');
+            setGeneratedModelUrl(glbUrl);
+
+            setTimeout(() => {
+              if (isMounted) setStep(3);
+            }, 800);
+
+          } catch (error: any) {
+            console.error('Trellis API generation failed:', error);
+            if (!isMounted) return;
+            clearInterval(interval);
+            setApiError(error.message || 'Unknown API Error occurred. Make sure your FAL_KEY is valid and has sufficient credits.');
+            setScanStatus('Generation failed.');
+          }
+        };
+
+        runTrellis();
+      }
     }
-    return () => clearInterval(interval);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [step]);
 
 
@@ -99,6 +231,8 @@ export default function TwinCreator() {
   const resetCreator = () => {
     setStep(1);
     setScanProgress(0);
+    setGeneratedModelUrl(null);
+    setApiError(null);
   };
 
   return (
@@ -160,7 +294,11 @@ export default function TwinCreator() {
                   {presets.map((pet) => (
                     <button
                       key={pet.name}
-                      onClick={() => setSelectedPet(pet)}
+                      onClick={() => {
+                        setSelectedPet(pet);
+                        setCustomFile(null);
+                        setPreviewUrl(null);
+                      }}
                       className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all duration-200 cursor-pointer ${
                         selectedPet.name === pet.name
                           ? 'border-[#E87A5D] bg-orange-50/20 shadow-md shadow-orange-500/5'
@@ -206,18 +344,77 @@ export default function TwinCreator() {
                     ))}
                   </div>
                 </div>
+
+                {/* Advanced API settings */}
+                <div className="pt-4 border-t border-stone-200/60">
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKeyInput(!showApiKeyInput)}
+                    className="text-xs font-bold text-stone-500 hover:text-stone-850 flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <span>⚙️</span>
+                    <span>{showApiKeyInput ? 'Hide API Settings' : 'Advanced: Real-time 3D Generation (TRELLIS 2.0)'}</span>
+                  </button>
+                  
+                  {showApiKeyInput && (
+                    <div className="mt-3 p-4 bg-stone-50 border border-stone-200 rounded-2xl space-y-3 animate-fade-in">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-stone-600 uppercase tracking-wider block">
+                          Fal.ai API Key
+                        </label>
+                        <input
+                          type="password"
+                          value={falApiKey}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setFalApiKey(val);
+                            localStorage.setItem('pawsence_fal_key', val);
+                          }}
+                          placeholder="Enter your FAL_KEY..."
+                          className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:border-[#E87A5D] focus:outline-none font-mono"
+                        />
+                      </div>
+                      <p className="text-[10px] text-stone-400 leading-normal">
+                        Optional. Uses Microsoft's **TRELLIS 2.0** model via Fal.ai to generate custom 3D models. If blank, Otis/Luna will use preloaded 3D models.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Upload Drag & Drop mockup */}
-              <div className="border-2 border-dashed border-stone-300/80 hover:border-[#E87A5D]/80 rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-all bg-stone-50/50 aspect-[4/3] relative group">
-                <Upload className="w-10 h-10 text-stone-400 mb-4 group-hover:text-[#E87A5D] transition-colors" />
-                <h4 className="font-bold text-stone-800 text-sm">Drag and drop photos here</h4>
-                <p className="text-xs text-stone-400 mt-2 max-w-[200px]">
-                  Upload 3 to 5 clear photos of your pet (JPG, PNG) from different angles.
-                </p>
-                <div className="mt-5 px-4 py-2 bg-white border border-stone-200 rounded-full text-xs font-semibold text-stone-700 shadow-sm cursor-pointer hover:bg-stone-50 transition-all">
-                  Browse Files
-                </div>
+              <div 
+                onClick={() => document.getElementById('pet-photo-upload')?.click()}
+                className="border-2 border-dashed border-stone-300/80 hover:border-[#E87A5D]/80 rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-all bg-stone-50/50 aspect-[4/3] relative group cursor-pointer overflow-hidden"
+              >
+                <input 
+                  type="file"
+                  id="pet-photo-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                
+                {previewUrl ? (
+                  <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-stone-50">
+                    <img src={previewUrl} alt="Uploaded pet preview" className="w-full h-full object-cover animate-fade-in" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2">
+                      <RefreshCw className="w-6 h-6 text-white" />
+                      <span className="text-xs font-bold text-white">Change Image</span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-10 h-10 text-stone-400 mb-4 group-hover:text-[#E87A5D] transition-colors" />
+                    <h4 className="font-bold text-stone-800 text-sm">Drag and drop photo here</h4>
+                    <p className="text-xs text-stone-400 mt-2 max-w-[200px]">
+                      Upload a photo of your pet to generate a custom 3D model.
+                    </p>
+                    <div className="mt-5 px-4 py-2 bg-white border border-stone-200 rounded-full text-xs font-semibold text-stone-700 shadow-sm cursor-pointer hover:bg-stone-50 transition-all">
+                      Browse Files
+                    </div>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
@@ -284,6 +481,37 @@ export default function TwinCreator() {
                   />
                 </div>
                 <p className="text-sm text-stone-700 font-medium font-mono min-h-[20px]">{scanStatus}</p>
+                
+                {apiError && (
+                  <div className="mt-5 p-4 bg-red-50 border border-red-200 rounded-2xl text-left max-w-sm mx-auto shadow-sm animate-fade-in">
+                    <p className="text-xs font-bold text-red-800">TRELLIS API Error</p>
+                    <p className="text-[10px] text-red-600 font-mono mt-1 leading-normal whitespace-pre-wrap">{apiError}</p>
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setApiError(null);
+                          setStep(1);
+                        }}
+                        className="flex-1 px-3 py-2 bg-white border border-stone-200 hover:bg-stone-50 rounded-xl text-[10px] font-bold text-stone-700 cursor-pointer text-center"
+                      >
+                        Adjust Settings
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setApiError(null);
+                          // Temporarily bypass API and run simulated path
+                          setFalApiKey('');
+                          setStep(2);
+                        }}
+                        className="flex-1 px-3 py-2 bg-[#E87A5D] hover:bg-[#D6684B] rounded-xl text-[10px] font-bold text-white cursor-pointer text-center"
+                      >
+                        Use Preloaded Model
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -303,11 +531,11 @@ export default function TwinCreator() {
                 <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
                  {/* The Twin Avatar */}
-                {avatarStyle === 'animated' && (selectedPet.name === 'Otis' || selectedPet.name === 'Luna') ? (
+                {avatarStyle === 'animated' && (selectedPet.name === 'Otis' || selectedPet.name === 'Luna' || generatedModelUrl) ? (
                   <div className="w-full h-full z-10 relative">
                     <ThreePetCanvas 
-                      key={selectedPet.name}
-                      modelPath={selectedPet.name === 'Otis' ? '/pug_3d.glb' : '/cat_animated_3d.glb'} 
+                      key={selectedPet.name + (generatedModelUrl ? '_generated' : '_default')}
+                      modelPath={generatedModelUrl || (selectedPet.name === 'Otis' ? '/pug_3d.glb' : '/cat_animated_3d.glb')} 
                       action={avatarAction} 
                     />
                   </div>
