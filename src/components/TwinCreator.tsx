@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Check, Play, RefreshCw, Camera, ArrowRight } from 'lucide-react';
+import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
 import ThreePugCanvas from './ThreePugCanvas';
 
 interface PresetPet {
@@ -53,7 +53,7 @@ export default function TwinCreator() {
   const [avatarStyle, setAvatarStyle] = useState<'animated' | 'realistic' | 'anime'>('animated');
   const [scanProgress, setScanProgress] = useState<number>(0);
   const [scanStatus, setScanStatus] = useState<string>('Initializing model...');
-  const [avatarAction, setAvatarAction] = useState<'idle' | 'jump' | 'spin' | 'wag'>('idle');
+  const avatarAction = 'idle' as 'idle' | 'jump' | 'spin' | 'wag';
 
   // Scanning effect in Step 2
   useEffect(() => {
@@ -94,10 +94,7 @@ export default function TwinCreator() {
     return () => clearInterval(interval);
   }, [step]);
 
-  const triggerAction = (action: 'jump' | 'spin' | 'wag') => {
-    setAvatarAction(action);
-    setTimeout(() => setAvatarAction('idle'), 1000); // reset state after 1 second
-  };
+
 
   const resetCreator = () => {
     setStep(1);
@@ -295,100 +292,53 @@ export default function TwinCreator() {
           {step === 3 && (
             <motion.div
               key="step3"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="grid md:grid-cols-2 gap-8 items-center"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="flex flex-col items-center justify-center py-6 text-center"
             >
-              {/* Left Column: Avatar view */}
-              <div className="flex flex-col items-center">
-                <div className="relative w-64 h-64 rounded-3xl bg-stone-50 border border-stone-200 shadow-lg flex items-center justify-center overflow-hidden">
-                  {/* Grid background */}
-                  <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
-                  
-                   {/* The Twin Avatar */}
-                  {selectedPet.name === 'Otis' && avatarStyle === 'animated' ? (
-                    <div className="w-full h-full z-10 relative">
-                      <ThreePugCanvas action={avatarAction} />
-                    </div>
-                  ) : (
-                    <motion.img
-                      src={selectedPet.avatars[avatarStyle]}
-                      alt={selectedPet.name}
-                      className="w-[85%] h-[85%] object-contain drop-shadow-xl z-10"
-                      animate={
-                        avatarAction === 'jump'
-                          ? { y: [-20, 0], scale: [1, 1.05, 1] }
-                          : avatarAction === 'spin'
-                          ? { rotate: [0, 360], scale: [1, 0.95, 1] }
-                          : avatarAction === 'wag'
-                          ? { rotate: [0, -5, 5, -5, 5, 0], x: [0, -3, 3, -3, 3, 0] }
-                          : { y: 0, rotate: 0, scale: 1 }
-                      }
-                      transition={{
-                        duration: avatarAction === 'wag' ? 0.8 : 0.5,
-                        ease: 'easeInOut',
-                      }}
-                    />
-                  )}
-                  
-                  {/* Shadow */}
-                  <div className="absolute bottom-[8%] w-1/2 h-3 bg-stone-900/5 rounded-full blur-[4px] z-0" />
-
-                  <div className="absolute top-4 left-4 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[9px] font-bold text-emerald-800 uppercase font-mono tracking-wider">
-                    Model Ready
-                  </div>
-                </div>
+              {/* Centered Avatar View (Made slightly larger for showcase) */}
+              <div className="relative w-80 h-80 md:w-96 md:h-96 rounded-3xl bg-stone-50 border border-stone-200 shadow-xl flex items-center justify-center overflow-hidden">
+                {/* Grid background */}
+                <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
-                <span className="text-xs text-stone-400 mt-2 font-mono uppercase tracking-wider">
-                  Test rig: {selectedPet.name} ({selectedPet.breed}) - {avatarStyle} style
-                </span>
-              </div>
-
-              {/* Right Column: Interaction panel */}
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-stone-900 tracking-tight">Your Digital Twin is Alive!</h3>
-                  <p className="text-sm text-stone-500 mt-2">
-                    Click the buttons below to test animations on your twin. In the desktop client, these states trigger automatically.
-                  </p>
-                </div>
-
-                {/* Animation actions */}
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { id: 'jump', label: 'Jump' },
-                    { id: 'spin', label: 'Spin' },
-                    { id: 'wag', label: 'Wag Tail' }
-                  ].map((act) => (
-                    <button
-                      key={act.id}
-                      onClick={() => triggerAction(act.id as 'jump' | 'spin' | 'wag')}
-                      disabled={avatarAction !== 'idle'}
-                      className="p-3 bg-stone-50 hover:bg-stone-100 active:scale-95 border border-stone-200 rounded-xl text-xs font-bold text-stone-700 flex flex-col items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
-                    >
-                      <Play className="w-4 h-4 text-[#E87A5D] fill-current" />
-                      <span>{act.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Final Connect Option */}
-                <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-stone-200 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                      <Camera className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h5 className="text-xs font-bold text-stone-900">Step 3: Connect Feed</h5>
-                      <p className="text-[10px] text-stone-500"> Wyze, Furbo, Ring or RTSP</p>
-                    </div>
+                 {/* The Twin Avatar */}
+                {selectedPet.name === 'Otis' && avatarStyle === 'animated' ? (
+                  <div className="w-full h-full z-10 relative">
+                    <ThreePugCanvas action={avatarAction} />
                   </div>
-                  <button className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-lg transition-all cursor-pointer">
-                    Mock Link
-                  </button>
+                ) : (
+                  <motion.img
+                    src={selectedPet.avatars[avatarStyle]}
+                    alt={selectedPet.name}
+                    className="w-[85%] h-[85%] object-contain drop-shadow-xl z-10"
+                    animate={
+                      avatarAction === 'jump'
+                        ? { y: [-20, 0], scale: [1, 1.05, 1] }
+                        : avatarAction === 'spin'
+                        ? { rotate: [0, 360], scale: [1, 0.95, 1] }
+                        : avatarAction === 'wag'
+                        ? { rotate: [0, -5, 5, -5, 5, 0], x: [0, -3, 3, -3, 3, 0] }
+                        : { y: 0, rotate: 0, scale: 1 }
+                    }
+                    transition={{
+                      duration: avatarAction === 'wag' ? 0.8 : 0.5,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                )}
+                
+                {/* Shadow */}
+                <div className="absolute bottom-[8%] w-1/2 h-3 bg-stone-900/5 rounded-full blur-[4px] z-0" />
+
+                <div className="absolute top-4 left-4 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[9px] font-bold text-emerald-800 uppercase font-mono tracking-wider">
+                  Model Ready
                 </div>
               </div>
+              
+              <span className="text-xs text-stone-400 mt-4 font-mono uppercase tracking-wider">
+                Test rig: {selectedPet.name} ({selectedPet.breed}) - {avatarStyle} style
+              </span>
             </motion.div>
           )}
 
