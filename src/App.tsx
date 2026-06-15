@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, Lock } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import HeroSimulator from './components/HeroSimulator';
 import ScrollShowcase from './components/ScrollShowcase';
 import TwinCreator from './components/TwinCreator';
@@ -40,12 +40,12 @@ export default function App() {
 
         {/* Main Headings */}
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-[1.05] tracking-tight text-stone-900 max-w-4xl font-display">
-          Your pet's real-life actions, <br/>
-          <span className="text-stone-400">mirrored directly on your screen.</span>
+          Your pet, <br/>
+          <span className="text-stone-400">mirrored on your screen.</span>
         </h1>
         
         <p className="text-base md:text-lg text-stone-500 leading-relaxed max-w-2xl mt-6 px-4">
-          Pawsence connects to your existing pet camera, translates their physical actions using local AI, and manifests them as an interactive, ambient 3D desktop companion.
+          Pawsence connects to your existing pet camera, and manifests them as a 3D desktop companion.
         </p>
 
         {/* Action Buttons */}
@@ -106,19 +106,7 @@ export default function App() {
             <p className="text-base md:text-lg text-stone-600 leading-relaxed">
               No proprietary hardware required. If you have a camera pointed at your pet, we can translate its feed. Our on-device matching engine hooks directly into your existing video feed.
             </p>
-            
-            {/* Zero-cloud Processing card */}
-            <div className="bg-[#FAF8F5] rounded-3xl p-6 border border-stone-200/80 flex items-start space-x-4 shadow-sm">
-              <div className="bg-emerald-100 p-3.5 rounded-2xl text-emerald-700 mt-1 shadow-inner">
-                <Lock className="w-6 h-6 stroke-[2]" />
-              </div>
-              <div>
-                <h5 className="font-extrabold text-stone-900 mb-1 text-sm">Zero-cloud processing.</h5>
-                <p className="text-stone-600 text-xs leading-relaxed">
-                  Your camera feed never leaves your local network. The computer vision skeleton matching runs entirely on-device. We couldn't look at your house even if we tried.
-                </p>
-              </div>
-            </div>
+
           </div>
           
           {/* Camera Brands grid */}
