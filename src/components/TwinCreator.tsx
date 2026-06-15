@@ -697,10 +697,14 @@ export default function TwinCreator() {
                 <div className="absolute inset-0 bg-grid-pattern opacity-10 bg-[size:16px_16px]" />
                 
                 {/* The Twin Avatar (Framer Motion 2D Rigged Animation or WebM/MP4 video loop) */}
-                {selectedPet.name === 'Otis' && avatarStyle === 'animated' && (avatarAction === 'jump' || avatarAction === 'wag') ? (
+                {selectedPet.name === 'Otis' && avatarStyle === 'animated' && (avatarAction === 'jump' || avatarAction === 'wag' || avatarAction === 'spin') ? (
                   <video
                     key={avatarAction}
-                    src={avatarAction === 'jump' ? '/pug_animated_jumping.mp4' : '/pug_animated_wagging.mp4'}
+                    src={
+                      avatarAction === 'jump' ? '/pug_animated_jumping.mp4' :
+                      avatarAction === 'wag' ? '/pug_animated_wagging.mp4' :
+                      '/pug_animated_spinning.mp4'
+                    }
                     autoPlay
                     muted
                     playsInline
