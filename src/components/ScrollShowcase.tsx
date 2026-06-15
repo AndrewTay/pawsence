@@ -102,7 +102,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Luna: Sleeping
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/cat_sleeping_avatar.webp?v=2" className="w-full h-full object-contain" />
+                    <img src="/cat_sleeping_avatar.webp?v=2" alt="Digital Twin Luna Sleeping" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -190,7 +190,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Otis: Feeding
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/pug_eating_avatar.webp?v=2" className="w-full h-full object-contain" />
+                    <img src="/pug_eating_avatar.webp?v=2" alt="Digital Twin Otis Eating" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
@@ -251,7 +251,7 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                     Buddy: Waiting
                   </div>
                   <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
-                    <img src="/avatar_waiting.webp?v=2" className="w-full h-full object-contain" />
+                    <img src="/avatar_waiting.webp?v=2" alt="Digital Twin Buddy Waiting" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </motion.div>
