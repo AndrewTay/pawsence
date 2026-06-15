@@ -111,17 +111,8 @@ export default function TwinCreator() {
   };
 
   const triggerAction = useCallback((action: 'jump' | 'spin' | 'wag') => {
-    if (avatarAction !== 'idle') return;
-    setAvatarAction(action);
-    
-    const isVideoAction = selectedPet.name === 'Otis' && avatarStyle === 'animated' && (action === 'jump' || action === 'wag');
-    if (!isVideoAction) {
-      const duration = action === 'wag' ? 1000 : 650;
-      setTimeout(() => {
-        setAvatarAction('idle');
-      }, duration);
-    }
-  }, [avatarAction, selectedPet.name, avatarStyle]);
+    setAvatarAction((prev) => (prev === action ? 'idle' : action));
+  }, []);
 
   const startScanning = (apiKeyOverride?: string) => {
     setScanProgress(0);
@@ -713,8 +704,8 @@ export default function TwinCreator() {
                     autoPlay
                     muted
                     playsInline
+                    loop
                     className="w-[85%] h-[85%] object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.2)] z-10"
-                    onEnded={() => setAvatarAction('idle')}
                   />
                 ) : (
                   <motion.img
@@ -733,13 +724,11 @@ export default function TwinCreator() {
                             scaleY: [0.99, 1.015, 0.99] 
                           }
                     }
-                    transition={
-                      avatarAction === 'wag'
-                        ? { duration: 0.8, ease: 'easeInOut' }
-                        : avatarAction === 'jump' || avatarAction === 'spin'
-                        ? { duration: 0.65, ease: 'easeInOut' }
-                        : { duration: 2.0, repeat: Infinity, ease: 'easeInOut' }
-                    }
+                    transition={{
+                      duration: avatarAction === 'wag' ? 0.8 : avatarAction === 'jump' || avatarAction === 'spin' ? 0.65 : 2.0,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
                   />
                 )}
                 
@@ -752,22 +741,29 @@ export default function TwinCreator() {
               </div>
 
               {/* Interaction Animation Control Pills */}
-              <div className="flex gap-2.5 mt-5 justify-center z-20">
+              <div className="flex gap-2.5 mt-5 justify-center z-20 font-sans">
                 {[
                   { id: 'wag' as const, label: '🐾 Wag Tail' },
                   { id: 'jump' as const, label: '🦘 Jump' },
                   { id: 'spin' as const, label: '✨ Spin' }
-                ].map((act) => (
-                  <button
-                    key={act.id}
-                    onClick={() => triggerAction(act.id)}
-                    disabled={avatarAction !== 'idle'}
-                    className="px-4 py-2 bg-[#FAF8F5] hover:bg-stone-100 disabled:opacity-50 text-stone-700 disabled:text-stone-400 text-xs font-bold rounded-full border border-stone-200 shadow-sm transition-all active:scale-[0.97] cursor-pointer"
-                  >
-                    {act.label}
-                  </button>
-                ))}
+                ].map((act) => {
+                  const isActive = avatarAction === act.id;
+                  return (
+                    <button
+                      key={act.id}
+                      onClick={() => triggerAction(act.id)}
+                      className={`px-4 py-2 text-xs font-bold rounded-full border shadow-sm transition-all active:scale-[0.97] cursor-pointer ${
+                        isActive
+                          ? 'bg-[#E87A5D] text-white border-[#E87A5D] shadow-md shadow-orange-500/10'
+                          : 'bg-[#FAF8F5] hover:bg-stone-100 text-stone-700 border-stone-200'
+                      }`}
+                    >
+                      {act.label}
+                    </button>
+                  );
+                })}
               </div>
+
               
               <span className="text-xs text-stone-400 mt-4 font-mono uppercase tracking-wider">
                 Test rig: {selectedPet.name} ({selectedPet.breed}) - {avatarStyle} style
