@@ -6,7 +6,10 @@ interface PetState {
   id: 'sleep' | 'eat' | 'wait';
   label: string;
   cameraImg: string;
+  cameraVideo?: string;
   avatarImg: string;
+  desktopPoster: string;
+  desktopVideo?: string;
   cvLabel: string;
   avatarLabel: string;
   statusColor: string;
@@ -18,7 +21,10 @@ const states: PetState[] = [
     id: 'sleep',
     label: 'Sleeping',
     cameraImg: '/dog_sleeping.webp',
+    cameraVideo: '/hero-loops/camera-sleep.mp4',
     avatarImg: '/avatar_sleeping.webp?v=2',
+    desktopPoster: '/mac_wallpaper.webp',
+    desktopVideo: '/hero-loops/desktop-sleep.mp4',
     cvLabel: 'Activity: Inactive (Resting)',
     avatarLabel: 'Twin State: Deep Sleep',
     statusColor: 'bg-blue-500',
@@ -29,6 +35,7 @@ const states: PetState[] = [
     label: 'Eating',
     cameraImg: '/dog_eating.webp',
     avatarImg: '/avatar_eating.webp?v=2',
+    desktopPoster: '/mac_wallpaper.webp',
     cvLabel: 'Activity: Active (Feeding)',
     avatarLabel: 'Twin State: Mimicking (Feeding)',
     statusColor: 'bg-emerald-500',
@@ -39,6 +46,7 @@ const states: PetState[] = [
     label: 'Waiting',
     cameraImg: '/dog_waiting.webp',
     avatarImg: '/avatar_waiting.webp?v=2',
+    desktopPoster: '/mac_wallpaper.webp',
     cvLabel: 'Activity: Alert (Waiting)',
     avatarLabel: 'Twin State: Mimicking (Alert)',
     statusColor: 'bg-[#E87A5D]',
@@ -104,18 +112,37 @@ export default function HeroSimulator() {
           {/* Camera Frame */}
           <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-900 overflow-hidden border border-stone-800 shadow-inner flex items-center justify-center">
             
-            {/* The Image */}
+            {/* Live loop */}
             <AnimatePresence mode="wait">
-              <motion.img
-                key={currentState.id + '-cam'}
-                src={currentState.cameraImg}
-                alt={`Real pet ${currentState.label}`}
-                className="w-full h-full object-cover opacity-85"
-                initial={{ opacity: 0, filter: 'blur(8px)' }}
-                animate={{ opacity: 0.85, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, filter: 'blur(8px)' }}
-                transition={{ duration: 0.4 }}
-              />
+              {currentState.cameraVideo ? (
+                <motion.video
+                  key={currentState.id + '-cam-video'}
+                  src={currentState.cameraVideo}
+                  poster={currentState.cameraImg}
+                  aria-label={`Real pet ${currentState.label}`}
+                  className="w-full h-full object-cover opacity-85"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  initial={{ opacity: 0, filter: 'blur(8px)' }}
+                  animate={{ opacity: 0.85, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.4 }}
+                />
+              ) : (
+                <motion.img
+                  key={currentState.id + '-cam-image'}
+                  src={currentState.cameraImg}
+                  alt={`Real pet ${currentState.label}`}
+                  className="w-full h-full object-cover opacity-85"
+                  initial={{ opacity: 0, filter: 'blur(8px)' }}
+                  animate={{ opacity: 0.85, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.4 }}
+                />
+              )}
             </AnimatePresence>
 
             {/* Computer Vision Overlay Grid & Keypoints */}
@@ -205,51 +232,64 @@ export default function HeroSimulator() {
           {/* Desktop Frame */}
           <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-900 overflow-hidden border border-stone-205 flex items-center justify-center shadow-inner">
             
-            {/* Desktop Background Mock */}
-            <img 
-              src="/mac_wallpaper.webp" 
-              alt="macOS Desktop Wallpaper" 
-              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" 
-            />
-
-
-            {/* macOS Dock */}
-            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 h-8 bg-white/20 backdrop-blur-lg border border-white/10 rounded-xl px-2 hidden lg:flex items-center gap-2.5 z-20 shadow-lg pointer-events-none select-none">
-              <span className="text-[13px]">📁</span>
-              <span className="text-[13px]">🌐</span>
-              <span className="text-[13px]">💬</span>
-              <span className="text-[13px] bg-[#E87A5D]/20 border border-[#E87A5D]/40 px-1 rounded-md">🐾</span>
-              <span className="text-[13px]">🎵</span>
-              <span className="text-[13px]">⚙️</span>
-            </div>
-
-            {/* Viewport content - Positioned at the bottom-right of the desktop mockup */}
-            <div className="absolute bottom-5 right-5 sm:bottom-6 sm:right-6 lg:bottom-10 lg:right-10 w-28 h-28 sm:w-36 sm:h-36 lg:w-44 lg:h-44 z-10 flex flex-col justify-end items-center select-none pointer-events-none">
-              <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait">
+              {currentState.desktopVideo ? (
+                <motion.video
+                  key={currentState.id + '-desktop-video'}
+                  src={currentState.desktopVideo}
+                  poster={currentState.desktopPoster}
+                  aria-label={`Digital Twin ${currentState.label}`}
+                  className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  initial={{ opacity: 0, scale: 1.015, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, scale: 1.015, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.4 }}
+                />
+              ) : (
                 <motion.div
-                  key={currentState.id + '-avatar'}
-                  className="w-full h-[88%] flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
-                  initial={{ opacity: 0, scale: 0.9, y: 15 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -15 }}
-                  transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+                  key={currentState.id + '-desktop-fallback'}
+                  className="absolute inset-0 select-none pointer-events-none"
+                  initial={{ opacity: 0, scale: 1.015, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, scale: 1.015, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.4 }}
                 >
                   <img
-                    src={currentState.avatarImg}
-                    alt={`Digital Twin ${currentState.label}`}
-                    className="w-full h-full object-contain"
+                    src={currentState.desktopPoster}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
+                  <div className="absolute bottom-5 right-5 sm:bottom-6 sm:right-6 lg:bottom-10 lg:right-10 w-28 h-28 sm:w-36 sm:h-36 lg:w-44 lg:h-44 flex flex-col justify-end items-center">
+                    <img
+                      src={currentState.avatarImg}
+                      alt={`Digital Twin ${currentState.label}`}
+                      className="w-full h-[88%] object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
+                    />
+                    <div className="w-[70%] h-[6px] bg-stone-950/20 rounded-full blur-[3px] mt-1" />
+                  </div>
                 </motion.div>
-              </AnimatePresence>
+              )}
+            </AnimatePresence>
 
-              {/* Ambient Shadow under Avatar */}
-              <motion.div 
-                key={currentState.id + '-shadow'}
-                className="w-[70%] h-[6px] bg-stone-955/20 rounded-full blur-[3px] mt-1"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.4 }}
-              />
+            {/* macOS Dock */}
+            {!currentState.desktopVideo && (
+              <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 h-8 bg-white/20 backdrop-blur-lg border border-white/10 rounded-xl px-2 hidden lg:flex items-center gap-2.5 z-20 shadow-lg pointer-events-none select-none">
+                <span className="text-[13px]">📁</span>
+                <span className="text-[13px]">🌐</span>
+                <span className="text-[13px]">💬</span>
+                <span className="text-[13px] bg-[#E87A5D]/20 border border-[#E87A5D]/40 px-1 rounded-md">🐾</span>
+                <span className="text-[13px]">🎵</span>
+                <span className="text-[13px]">⚙️</span>
+              </div>
+            )}
+
+            <div className="sr-only" aria-live="polite">
+              {currentState.avatarLabel}
             </div>
 
             {/* Sync Overlay Loader */}
