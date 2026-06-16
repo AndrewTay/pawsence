@@ -69,7 +69,7 @@ export default function HeroSimulator() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+    <div className="w-full max-w-[1420px] mx-auto px-0 sm:px-2 lg:px-4 py-8">
       {/* Simulation Controls */}
       <div className="flex flex-wrap justify-center gap-3 mb-10">
         {states.map((state) => {
@@ -93,12 +93,12 @@ export default function HeroSimulator() {
       </div>
 
       {/* Split Screen Simulator Frame */}
-      <div className="grid lg:grid-cols-2 gap-8 items-stretch relative mb-8">
+      <div className="grid xl:grid-cols-2 gap-6 lg:gap-8 items-start relative mb-8">
 
         {/* LEFT PANEL: Live Camera Feed */}
-        <div className="bg-white rounded-3xl p-5 border border-stone-200/60 shadow-xl flex flex-col justify-between overflow-hidden relative group">
+        <div className="bg-white rounded-3xl p-3 sm:p-5 border border-stone-200/60 shadow-xl flex flex-col justify-between overflow-hidden relative group">
           {/* Header */}
-          <div className="flex justify-between items-center mb-4 z-10 select-none">
+          <div className="flex justify-between items-center gap-3 mb-4 z-10 select-none">
             <div className="flex items-center gap-2">
               <Camera className="w-5 h-5 text-stone-700" />
               <span className="font-bold text-sm text-stone-900 tracking-tight">Camera Feed (1080p)</span>
@@ -110,7 +110,7 @@ export default function HeroSimulator() {
           </div>
 
           {/* Camera Frame */}
-          <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-900 overflow-hidden border border-stone-800 shadow-inner flex items-center justify-center">
+          <div className="relative aspect-video rounded-2xl bg-stone-900 overflow-hidden border border-stone-800 shadow-inner flex items-center justify-center">
             
             {/* Live loop */}
             <AnimatePresence mode="wait">
@@ -168,10 +168,10 @@ export default function HeroSimulator() {
                 transition={{ duration: 0.5 }}
                 className="absolute border border-[#A3E635]/60 rounded-lg shadow-[0_0_15px_rgba(163,230,53,0.15)] flex flex-col justify-between p-2"
                 style={{
-                  top: currentState.id === 'sleep' ? '25%' : currentState.id === 'eat' ? '30%' : '15%',
-                  bottom: currentState.id === 'sleep' ? '25%' : currentState.id === 'eat' ? '15%' : '15%',
-                  left: currentState.id === 'sleep' ? '20%' : currentState.id === 'eat' ? '25%' : '30%',
-                  right: currentState.id === 'sleep' ? '20%' : currentState.id === 'eat' ? '25%' : '30%',
+                  top: currentState.id === 'sleep' ? '22%' : currentState.id === 'eat' ? '24%' : '14%',
+                  bottom: currentState.id === 'sleep' ? '14%' : currentState.id === 'eat' ? '12%' : '12%',
+                  left: currentState.id === 'sleep' ? '18%' : currentState.id === 'eat' ? '24%' : '28%',
+                  right: currentState.id === 'sleep' ? '18%' : currentState.id === 'eat' ? '22%' : '28%',
                 }}
               >
                 {/* Bounding box corners */}
@@ -216,9 +216,9 @@ export default function HeroSimulator() {
         </div>
 
         {/* RIGHT PANEL: Digital Twin Desktop */}
-        <div className="bg-white rounded-3xl p-5 border border-stone-200/60 shadow-xl flex flex-col justify-between overflow-hidden relative group">
+        <div className="bg-white rounded-3xl p-3 sm:p-5 border border-stone-200/60 shadow-xl flex flex-col justify-between overflow-hidden relative group">
           {/* Header */}
-          <div className="flex justify-between items-center mb-4 z-10 select-none">
+          <div className="flex justify-between items-center gap-3 mb-4 z-10 select-none">
             <div className="flex items-center gap-2">
               <Monitor className="w-5 h-5 text-stone-700" />
               <span className="font-bold text-sm text-stone-900 tracking-tight">Mac Desktop Widget</span>
@@ -230,7 +230,7 @@ export default function HeroSimulator() {
           </div>
 
           {/* Desktop Frame */}
-          <div className="relative aspect-video lg:aspect-square rounded-2xl bg-stone-900 overflow-hidden border border-stone-205 flex items-center justify-center shadow-inner">
+          <div className="relative aspect-video rounded-2xl bg-stone-900 overflow-hidden border border-stone-200 flex items-center justify-center shadow-inner">
             
             <AnimatePresence mode="wait">
               {currentState.desktopVideo ? (
