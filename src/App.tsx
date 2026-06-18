@@ -15,8 +15,8 @@ export default function App() {
       
       {/* --- NAVIGATION --- */}
       <nav className="fixed w-full top-0 z-40 bg-[#FAF8F5]/85 backdrop-blur-md border-b border-stone-200/50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="text-2xl font-black tracking-tight text-stone-900 flex items-center gap-1.5 font-display">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+          <div className="text-xl sm:text-2xl font-black tracking-tight text-stone-900 flex items-center gap-1.5 font-display">
             Pawsence<span className="text-[#E87A5D]">.</span>
           </div>
           
@@ -29,7 +29,7 @@ export default function App() {
 
           <button
             onClick={() => setIsBetaOpen(true)}
-            className="bg-stone-900 text-stone-50 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-stone-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md shadow-stone-950/5 cursor-pointer"
+            className="bg-stone-900 text-stone-50 px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider hover:bg-stone-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md shadow-stone-950/5 cursor-pointer"
           >
             Get Early Access
           </button>
@@ -46,8 +46,11 @@ export default function App() {
         </h1>
         
         <p className="text-base md:text-lg text-stone-500 leading-relaxed max-w-2xl mt-6 px-4">
-          Pawsence connects to your existing pet camera, and manifests them as a 3D desktop companion.
+          Pawsence connects to your existing pet camera or wearable*, and manifests them as a 3D desktop companion.
         </p>
+        <span className="text-[11px] text-stone-400/85 font-mono mt-2 block">
+          *wearable needs to support action detection
+        </span>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-10 mb-16 px-4 w-full max-w-md mx-auto sm:max-w-none sm:mx-0 sm:px-0 sm:w-auto justify-center">
@@ -102,10 +105,10 @@ export default function App() {
               <span>Universal integration</span>
             </div>
             <h2 className="text-4xl font-extrabold tracking-tight text-stone-900 font-display leading-[1.1]">
-              Works with the camera you already own.
+              Works with the device you already own.
             </h2>
             <p className="text-base md:text-lg text-stone-600 leading-relaxed">
-              No proprietary hardware required. If you have a camera pointed at your pet, we can translate its feed. Our on-device matching engine hooks directly into your existing video feed.
+              No proprietary hardware required. If you have a pet camera or wearable, we can translate its feed onto your desktop pet.
             </p>
 
           </div>
@@ -116,7 +119,7 @@ export default function App() {
               { brand: 'Wyze', desc: 'Wyze Cam v2/v3/v4', icon: '📷', bg: 'from-orange-500/5 to-orange-500/0' },
               { brand: 'Furbo', desc: 'Interactive Dog Feed', icon: '🐶', bg: 'from-emerald-500/5 to-emerald-500/0' },
               { brand: 'Ring', desc: 'Indoor Nest Feeds', icon: '🏠', bg: 'from-blue-500/5 to-blue-500/0' },
-              { brand: 'RTSP / IP Camera', desc: 'Standard Local Streams', icon: '🌐', bg: 'from-purple-500/5 to-purple-500/0' }
+              { brand: 'FitBark', desc: 'GPS & Activity Tracker', icon: '⌚', bg: 'from-purple-500/5 to-purple-500/0' }
             ].map((item, i) => (
               <div
                 key={i}

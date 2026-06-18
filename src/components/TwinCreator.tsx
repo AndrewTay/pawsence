@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Check, RefreshCw, ArrowRight } from 'lucide-react';
 
 const funWaitingTips = [
-  "Tripo3D API is generating a high-quality 3D mesh. This process typically takes 30 to 60 seconds.",
-  "Uploading and processing the pet's pose using Tripo3D's rapid reconstruction pipeline...",
+  "Fal.ai API is generating a high-quality 3D mesh. This process typically takes 30 to 60 seconds.",
+  "Uploading and processing the pet's pose using Fal.ai's rapid reconstruction pipeline...",
   "Generating automatic skeletal rigging and mesh topology mapping...",
   "Synthesizing high-poly Physically-Based Rendering (PBR) texture maps for beautiful shadows and materials...",
   "Almost there! Optimizing the final GLB mesh for smooth, instant in-browser rendering...",
@@ -56,6 +56,17 @@ const presets: PresetPet[] = [
 ];
 
 
+function getAvatarVideoSrc(petName: string, action: 'idle' | 'jump' | 'spin' | 'wag'): string {
+  const prefix = petName === 'Luna' ? 'cat' : petName === 'Bini' ? 'bunny' : 'pug';
+  if (action === 'jump') {
+    return `/${prefix}_animated_jumping.mp4`;
+  }
+  if (action === 'wag') {
+    return `/${prefix}_animated_wagging.mp4`;
+  }
+  return `/${prefix}_animated_spinning.mp4`;
+}
+
 
 export default function TwinCreator() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -66,8 +77,8 @@ export default function TwinCreator() {
   const [avatarAction, setAvatarAction] = useState<'idle' | 'jump' | 'spin' | 'wag'>('idle');
 
   // Advanced API states
-  const [tripoApiKey, setTripoApiKey] = useState<string>(
-    () => localStorage.getItem('pawsence_tripo_key') || (import.meta.env.VITE_TRIPO_API_KEY as string) || ''
+  const [falApiKey, setFalApiKey] = useState<string>(
+    () => localStorage.getItem('pawsence_fal_key') || (import.meta.env.VITE_FAL_API_KEY as string) || ''
   );
   const [customFile, setCustomFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -78,15 +89,15 @@ export default function TwinCreator() {
   // Synchronized refs to avoid exhaustive-deps warning in the step 2 useEffect
   const selectedPetRef = useRef(selectedPet);
   const avatarStyleRef = useRef(avatarStyle);
-  const tripoApiKeyRef = useRef(tripoApiKey);
+  const falApiKeyRef = useRef(falApiKey);
   const customFileRef = useRef(customFile);
 
   useEffect(() => {
     selectedPetRef.current = selectedPet;
     avatarStyleRef.current = avatarStyle;
-    tripoApiKeyRef.current = tripoApiKey;
+    falApiKeyRef.current = falApiKey;
     customFileRef.current = customFile;
-  }, [selectedPet, avatarStyle, tripoApiKey, customFile]);
+  }, [selectedPet, avatarStyle, falApiKey, customFile]);
 
   // File Upload handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,8 +130,8 @@ export default function TwinCreator() {
     setApiError(null);
     setCurrentTipIndex(0);
     if (apiKeyOverride !== undefined) {
-      setTripoApiKey(apiKeyOverride);
-      localStorage.setItem('pawsence_tripo_key', apiKeyOverride);
+      setFalApiKey(apiKeyOverride);
+      localStorage.setItem('pawsence_fal_key', apiKeyOverride);
     }
     setStep(2);
   };
@@ -131,13 +142,13 @@ export default function TwinCreator() {
     let isMounted = true;
 
     if (step === 2) {
-      const currentTripoApiKey = tripoApiKeyRef.current;
+      const currentFalApiKey = falApiKeyRef.current;
       const currentAvatarStyle = avatarStyleRef.current;
       const currentCustomFile = customFileRef.current;
       const currentSelectedPet = selectedPetRef.current;
 
       // Check if we should use the real API
-      const useRealApi = currentTripoApiKey.trim() !== '' && currentAvatarStyle === 'animated';
+      const useRealApi = currentFalApiKey.trim() !== '' && currentAvatarStyle === 'animated';
 
       if (!useRealApi) {
         // SCENARIO 1: Simulated Scanning
@@ -168,8 +179,8 @@ export default function TwinCreator() {
           });
         }, 100);
       } else {
-        // SCENARIO 2: Real Tripo3D API call
-        setScanStatus('Configuring Tripo3D API Client...');
+        // SCENARIO 2: Real Fal.ai API call
+        setScanStatus('Configuring Fal.ai API Client...');
 
         // Slow progress simulation to keep the UI moving while the API runs
         interval = setInterval(() => {
@@ -181,7 +192,7 @@ export default function TwinCreator() {
           });
         }, 300);
 
-        const runTripo3d = async () => {
+        const runFalApi = async () => {
           try {
             setScanStatus('Preparing source image...');
             let fileToUpload: File | Blob;
@@ -199,92 +210,97 @@ export default function TwinCreator() {
 
             if (!isMounted) return;
 
-            // Determine file extension (type)
-            let fileExtension = 'png';
-            if (fileName.toLowerCase().endsWith('.webp')) {
-              fileExtension = 'webp';
-            } else if (fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.jpeg')) {
-              fileExtension = 'jpg';
-            } else if (fileToUpload.type) {
-              const parts = fileToUpload.type.split('/');
-              if (parts.length > 1) {
-                fileExtension = parts[1];
-                if (fileExtension === 'jpeg') fileExtension = 'jpg';
+            // Determine file MIME type
+            let fileType = fileToUpload.type || 'image/png';
+            if (!fileToUpload.type) {
+              if (fileName.toLowerCase().endsWith('.webp')) {
+                fileType = 'image/webp';
+              } else if (fileName.toLowerCase().endsWith('.jpg') || fileName.toLowerCase().endsWith('.jpeg')) {
+                fileType = 'image/jpeg';
               }
             }
 
-            setScanStatus('Uploading image to Tripo3D...');
-            const formData = new FormData();
-            formData.append('file', fileToUpload, fileName);
-
-            const uploadRes = await fetch('https://api.tripo3d.ai/v2/openapi/upload/sts', {
+            setScanStatus('Uploading image to Fal.ai storage...');
+            
+            const initiateRes = await fetch('https://queue.fal.run/storage/upload/initiate', {
               method: 'POST',
               headers: {
-                'Authorization': `Bearer ${currentTripoApiKey.trim()}`
-              },
-              body: formData
-            });
-
-            if (!uploadRes.ok) {
-              const errText = await uploadRes.text();
-              throw new Error(`Upload failed (${uploadRes.status}): ${errText}`);
-            }
-
-            const uploadJson = await uploadRes.json();
-            if (uploadJson.code !== 0 || !uploadJson.data || !uploadJson.data.image_token) {
-              throw new Error(uploadJson.message || 'Failed to upload image to Tripo3D.');
-            }
-
-            const imageToken = uploadJson.data.image_token;
-
-            if (!isMounted) return;
-            setScanStatus('Queuing generation on Tripo3D (v2.5)...');
-
-            const taskRes = await fetch('https://api.tripo3d.ai/v2/openapi/task', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${currentTripoApiKey.trim()}`,
+                'Authorization': `Key ${currentFalApiKey.trim()}`,
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                type: 'image_to_model',
-                model_version: 'v2.5-20250123',
-                file: {
-                  type: fileExtension,
-                  file_token: imageToken
-                }
+                file_name: fileName,
+                content_type: fileType
+              })
+            });
+
+            if (!initiateRes.ok) {
+              const errText = await initiateRes.text();
+              throw new Error(`Upload initiation failed (${initiateRes.status}): ${errText}`);
+            }
+
+            const initiateJson = await initiateRes.json();
+            const { upload_url, file_url } = initiateJson;
+
+            if (!upload_url || !file_url) {
+              throw new Error('Fal.ai storage upload URLs were not generated.');
+            }
+
+            if (!isMounted) return;
+
+            const uploadRes = await fetch(upload_url, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': fileType
+              },
+              body: fileToUpload
+            });
+
+            if (!uploadRes.ok) {
+              throw new Error(`Failed to upload file to storage (${uploadRes.status})`);
+            }
+
+            if (!isMounted) return;
+            setScanStatus('Queuing generation on Fal.ai (Tripo3D v2.5)...');
+
+            const taskRes = await fetch('https://queue.fal.run/tripo3d/tripo/v2.5/image-to-3d', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Key ${currentFalApiKey.trim()}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                image_url: file_url
               })
             });
 
             if (!taskRes.ok) {
               const errText = await taskRes.text();
-              throw new Error(`Task creation failed (${taskRes.status}): ${errText}`);
+              throw new Error(`Task submission failed (${taskRes.status}): ${errText}`);
             }
 
             const taskJson = await taskRes.json();
-            if (taskJson.code !== 0 || !taskJson.data || !taskJson.data.task_id) {
-              throw new Error(taskJson.message || 'Failed to create task on Tripo3D.');
+            const requestId = taskJson.request_id;
+            if (!requestId) {
+              throw new Error('No request_id returned from Fal.ai');
             }
 
-            const taskId = taskJson.data.task_id;
-
             // Poll task status
-            let taskStatus = 'queued';
-            let modelUrl = '';
+            let taskStatus = 'IN_QUEUE';
             let attempts = 0;
             const maxAttempts = 60; // 3 minutes total
 
-            while (isMounted && taskStatus !== 'success' && taskStatus !== 'failed' && attempts < maxAttempts) {
+            while (isMounted && taskStatus !== 'COMPLETED' && taskStatus !== 'FAILED' && attempts < maxAttempts) {
               attempts++;
-              setScanStatus(`Processing model on Tripo3D (attempt ${attempts})...`);
+              setScanStatus(`Processing model on Fal.ai (attempt ${attempts})...`);
 
               // Wait 3 seconds
               await new Promise((resolve) => setTimeout(resolve, 3000));
               if (!isMounted) return;
 
-              const pollRes = await fetch(`https://api.tripo3d.ai/v2/openapi/task/${taskId}`, {
+              const pollRes = await fetch(`https://queue.fal.run/tripo3d/tripo/v2.5/image-to-3d/requests/${requestId}/status`, {
                 headers: {
-                  'Authorization': `Bearer ${currentTripoApiKey.trim()}`
+                  'Authorization': `Key ${currentFalApiKey.trim()}`
                 }
               });
 
@@ -294,29 +310,42 @@ export default function TwinCreator() {
               }
 
               const pollJson = await pollRes.json();
-              if (pollJson.code !== 0 || !pollJson.data) {
-                throw new Error(pollJson.message || 'Failed to poll task status.');
-              }
-
-              taskStatus = pollJson.data.status;
-              const progress = pollJson.data.progress || 0;
-              setScanProgress(Math.min(95, progress));
-
-              if (taskStatus === 'success') {
-                const output = pollJson.data.output;
-                if (output) {
-                  modelUrl = output.pbr_model || output.model || output.base_model || '';
-                }
-                if (!modelUrl) {
-                  throw new Error('Tripo3D task completed but output model URL was empty.');
-                }
-              } else if (taskStatus === 'failed') {
-                throw new Error('Tripo3D generation failed during processing.');
+              taskStatus = pollJson.status;
+              
+              if (taskStatus === 'IN_QUEUE') {
+                setScanProgress(Math.min(30, 10 + attempts * 2));
+              } else if (taskStatus === 'IN_PROGRESS') {
+                setScanProgress(Math.min(90, 30 + attempts * 4));
+              } else if (taskStatus === 'FAILED') {
+                throw new Error('Fal.ai generation failed during processing.');
               }
             }
 
-            if (taskStatus !== 'success') {
-              throw new Error('Generation timed out.');
+            if (taskStatus !== 'COMPLETED') {
+              throw new Error('Generation timed out or failed on Fal.ai.');
+            }
+
+            if (!isMounted) return;
+            setScanStatus('Retrieving generated 3D model...');
+
+            const resultRes = await fetch(`https://queue.fal.run/tripo3d/tripo/v2.5/image-to-3d/requests/${requestId}`, {
+              headers: {
+                'Authorization': `Key ${currentFalApiKey.trim()}`
+              }
+            });
+
+            if (!resultRes.ok) {
+              throw new Error(`Failed to retrieve task result (${resultRes.status})`);
+            }
+
+            const resultJson = await resultRes.json();
+            let modelUrl = '';
+            if (resultJson.model_mesh && resultJson.model_mesh.url) {
+              modelUrl = resultJson.model_mesh.url;
+            }
+
+            if (!modelUrl) {
+              throw new Error('Fal.ai task completed but output model URL was empty.');
             }
 
             if (!isMounted) return;
@@ -330,16 +359,16 @@ export default function TwinCreator() {
             }, 800);
 
           } catch (error: unknown) {
-            console.error('Tripo3D API generation failed:', error);
+            console.error('Fal.ai API generation failed:', error);
             if (!isMounted) return;
             if (interval) clearInterval(interval);
             const errorMessage = error instanceof Error ? error.message : String(error);
-            setApiError(errorMessage || 'Unknown Tripo3D API Error occurred. Verify your API key is valid.');
+            setApiError(errorMessage || 'Unknown Fal.ai API Error occurred. Verify your API key is valid.');
             setScanStatus('Generation failed.');
           }
         };
 
-        runTripo3d();
+        runFalApi();
       }
     }
 
@@ -352,7 +381,7 @@ export default function TwinCreator() {
   // Cycling tips effect for Step 2 during active API calls
   useEffect(() => {
     let tipInterval: ReturnType<typeof setInterval> | undefined;
-    if (step === 2 && tripoApiKey.trim() !== '' && avatarStyle === 'animated') {
+    if (step === 2 && falApiKey.trim() !== '' && avatarStyle === 'animated') {
       tipInterval = setInterval(() => {
         setCurrentTipIndex((prev) => (prev + 1) % funWaitingTips.length);
       }, 7000);
@@ -360,7 +389,7 @@ export default function TwinCreator() {
     return () => {
       if (tipInterval) clearInterval(tipInterval);
     };
-  }, [step, tripoApiKey, avatarStyle]);
+  }, [step, falApiKey, avatarStyle]);
 
   // Autonomous animation loop (makes the pet feel alive in step 3)
   useEffect(() => {
@@ -508,29 +537,29 @@ export default function TwinCreator() {
                     className="text-xs font-bold text-stone-500 hover:text-stone-850 flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <span>⚙️</span>
-                    <span>{showApiKeyInput ? 'Hide API Settings' : 'Advanced: Real-time 3D Generation (Tripo3D V2.5)'}</span>
+                    <span>{showApiKeyInput ? 'Hide API Settings' : 'Advanced: Real-time 3D Generation (Fal.ai)'}</span>
                   </button>
                   
                   {showApiKeyInput && (
                     <div className="mt-3 p-4 bg-stone-50 border border-stone-200 rounded-2xl space-y-3 animate-fade-in">
                       <div className="space-y-1">
                         <label className="text-[10px] font-bold text-stone-600 uppercase tracking-wider block">
-                          Tripo3D API Key
+                          Fal.ai API Key
                         </label>
                         <input
                           type="password"
-                          value={tripoApiKey}
+                          value={falApiKey}
                           onChange={(e) => {
                             const val = e.target.value;
-                            setTripoApiKey(val);
-                            localStorage.setItem('pawsence_tripo_key', val);
+                            setFalApiKey(val);
+                            localStorage.setItem('pawsence_fal_key', val);
                           }}
-                          placeholder="Enter your Tripo3D API key..."
+                          placeholder="Enter your Fal.ai API key..."
                           className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:border-[#E87A5D] focus:outline-none font-mono"
                         />
                       </div>
                       <p className="text-[10px] text-stone-400 leading-normal">
-                        Optional. Uses **Tripo3D V2.5** to generate custom 3D models. If blank, Otis/Luna/Bini will use preloaded 3D models. Learn how to <a href="https://platform.tripo3d.ai/" target="_blank" rel="noopener noreferrer" className="text-[#E87A5D] hover:underline font-semibold">get your Tripo3D API key here</a>.
+                        Optional. Uses **Fal.ai (Tripo3D v2.5)** to generate custom 3D models. If blank, Otis/Luna/Bini will use preloaded 3D models. Learn how to <a href="https://fal.ai/" target="_blank" rel="noopener noreferrer" className="text-[#E87A5D] hover:underline font-semibold">get your Fal.ai API key here</a>.
                       </p>
                     </div>
                   )}
@@ -638,11 +667,11 @@ export default function TwinCreator() {
                 <p className="text-sm text-stone-700 font-medium font-mono min-h-[20px]">{scanStatus}</p>
                 
                 {/* Real API Waiting Notice */}
-                {tripoApiKey.trim() !== '' && avatarStyle === 'animated' && !apiError && (
+                {falApiKey.trim() !== '' && avatarStyle === 'animated' && !apiError && (
                   <div className="mt-6 p-4 bg-orange-50/50 border border-orange-100/70 rounded-2xl max-w-sm mx-auto shadow-sm animate-fade-in space-y-1.5 text-center">
                     <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#E87A5D]">
                       <span className="animate-pulse">⏳</span>
-                      <span>Tripo3D V2.5 Generation Active</span>
+                      <span>Fal.ai 3D Generation Active</span>
                     </div>
                     <p className="text-[11px] text-stone-600 leading-relaxed font-medium transition-all duration-500 min-h-[44px] flex items-center justify-center">
                       {funWaitingTips[currentTipIndex]}
@@ -656,7 +685,7 @@ export default function TwinCreator() {
 
                 {apiError && (
                   <div className="mt-5 p-4 bg-red-50 border border-red-200 rounded-2xl text-left max-w-sm mx-auto shadow-sm animate-fade-in">
-                    <p className="text-xs font-bold text-red-800">Tripo3D API Error</p>
+                    <p className="text-xs font-bold text-red-800">Fal.ai API Error</p>
                     <p className="text-[10px] text-red-600 font-mono mt-1 leading-normal whitespace-pre-wrap">{apiError}</p>
                     <div className="flex gap-2 mt-4">
                       <button
@@ -707,25 +736,7 @@ export default function TwinCreator() {
                 (avatarAction === 'jump' || avatarAction === 'wag' || avatarAction === 'spin') ? (
                   <video
                     key={avatarAction}
-                    src={
-                      selectedPet.name === 'Luna'
-                        ? avatarAction === 'jump'
-                          ? '/cat_animated_jumping.mp4'
-                          : avatarAction === 'wag'
-                          ? '/cat_animated_wagging.mp4'
-                          : '/cat_animated_spinning.mp4'
-                        : selectedPet.name === 'Bini'
-                        ? avatarAction === 'jump'
-                          ? '/bunny_animated_jumping.mp4'
-                          : avatarAction === 'wag'
-                          ? '/bunny_animated_wagging.mp4'
-                          : '/bunny_animated_spinning.mp4'
-                        : avatarAction === 'jump'
-                        ? '/pug_animated_jumping.mp4'
-                        : avatarAction === 'wag'
-                        ? '/pug_animated_wagging.mp4'
-                        : '/pug_animated_spinning.mp4'
-                    }
+                    src={getAvatarVideoSrc(selectedPet.name, avatarAction)}
                     autoPlay
                     muted
                     playsInline

@@ -96,12 +96,12 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                 </div>
 
                 {/* Floating Widget - Bounding box removed for natural feel (Size increased by 50%) */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 flex flex-row items-end justify-end gap-2 md:gap-3 z-20 transition-all font-sans">
-                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 right-2 sm:right-3 md:right-4 flex flex-row items-end justify-end gap-1.5 sm:gap-2 md:gap-3 z-20 transition-all font-sans">
+                  <div className="text-[5.5px] sm:text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full mb-0.5 sm:mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
+                    <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-amber-500 animate-pulse" />
                     Luna: Sleeping
                   </div>
-                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
+                  <div className="w-[75px] sm:w-[105px] md:w-[135px] h-[75px] sm:h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
                     <img src="/cat_sleeping_avatar.webp?v=2" alt="Digital Twin Luna Sleeping" className="w-full h-full object-contain" />
                   </div>
                 </div>
@@ -184,12 +184,12 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                 </div>
 
                 {/* Floating Widget - Bounding box removed for natural feel (Size increased by 50%) */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 flex flex-row items-end justify-end gap-2 md:gap-3 z-20 transition-all font-sans">
-                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 right-2 sm:right-3 md:right-4 flex flex-row items-end justify-end gap-1.5 sm:gap-2 md:gap-3 z-20 transition-all font-sans">
+                  <div className="text-[5.5px] sm:text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full mb-0.5 sm:mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
+                    <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Otis: Feeding
                   </div>
-                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
+                  <div className="w-[75px] sm:w-[105px] md:w-[135px] h-[75px] sm:h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
                     <img src="/pug_eating_avatar.webp?v=2" alt="Digital Twin Otis Eating" className="w-full h-full object-contain" />
                   </div>
                 </div>
@@ -245,12 +245,12 @@ function LaptopMockup({ step }: LaptopMockupProps) {
                 </div>
 
                 {/* Floating Widget - Bounding box removed for natural feel (Size increased by 50%) */}
-                <div className="absolute bottom-3 md:bottom-4 right-3 md:right-4 flex flex-row items-end justify-end gap-2 md:gap-3 z-20 transition-all font-sans">
-                  <div className="text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2.5 py-0.5 rounded-full mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 right-2 sm:right-3 md:right-4 flex flex-row items-end justify-end gap-1.5 sm:gap-2 md:gap-3 z-20 transition-all font-sans">
+                  <div className="text-[5.5px] sm:text-[7.5px] md:text-[9px] font-extrabold text-white bg-black/65 backdrop-blur-sm px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full mb-0.5 sm:mb-1 md:mb-1.5 flex items-center gap-1 shadow-md whitespace-nowrap">
+                    <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-red-500 animate-pulse" />
                     Buddy: Waiting
                   </div>
-                  <div className="w-[105px] md:w-[135px] h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
+                  <div className="w-[75px] sm:w-[105px] md:w-[135px] h-[75px] sm:h-[105px] md:h-[135px] flex items-center justify-center filter drop-shadow-md">
                     <img src="/avatar_waiting.webp?v=2" alt="Digital Twin Buddy Waiting" className="w-full h-full object-contain" />
                   </div>
                 </div>
