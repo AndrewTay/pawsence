@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { ChevronRight } from 'lucide-react';
 import HeroSimulator from './components/HeroSimulator';
 import ScrollShowcase from './components/ScrollShowcase';
@@ -6,9 +6,42 @@ import TwinCreator from './components/TwinCreator';
 import BentoBox from './components/BentoBox';
 
 const BetaModal = lazy(() => import('./components/BetaModal'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 
 export default function App() {
   const [isBetaOpen, setIsBetaOpen] = useState(false);
+  const [currentRoute, setCurrentRoute] = useState(() => {
+    const hash = window.location.hash;
+    if (hash === '#/privacy') return 'privacy';
+    return 'home';
+  });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#/privacy') {
+        setCurrentRoute('privacy');
+        window.scrollTo(0, 0);
+      } else {
+        setCurrentRoute('home');
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  if (currentRoute === 'privacy') {
+    return (
+      <Suspense fallback={
+        <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-[#E87A5D] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      }>
+        <PrivacyPolicy goHome={() => { window.location.hash = '#/'; }} />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-stone-800 font-sans selection:bg-[#E87A5D] selection:text-white">
