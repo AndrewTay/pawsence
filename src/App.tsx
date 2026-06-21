@@ -79,7 +79,7 @@ export default function App() {
         </h1>
         
         <p className="text-base md:text-lg text-stone-500 leading-relaxed max-w-2xl mt-6 px-4">
-          Pawsence connects to your existing pet camera or wearable*, and manifests them as a 3D desktop companion.
+          Pawsence connects to your existing pet camera or wearable*, and brings your pet's presence to life as a 3D desktop companion.
         </p>
         <span className="text-[11px] text-stone-400/85 font-mono mt-2 block">
           *wearable needs to support action detection
